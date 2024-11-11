@@ -12,9 +12,9 @@ def create_app() -> FastAPI:
     # CORS 설정
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # 실제 운영 환경에서는 구체적인 도메인을 지정해야 합니다
+        allow_origins=["*"],  # 실제 프론트엔드 도메인
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
 

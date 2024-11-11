@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24시간
 
+    # SSL 설정
+    SSL_KEYFILE: str = "key.pem"
+    SSL_CERTFILE: str = "cert.pem"
+    SSL_PORT: int = 8443
+
     class Config:
         case_sensitive = True
         env_file = ".env"
