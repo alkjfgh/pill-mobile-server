@@ -1,11 +1,11 @@
-fastapi>=0.115.4
-uvicorn>=0.32.0
-pydantic>=2.9.2
-pydantic-settings>=2.0.0
+fastapi>=0.115.4  # FastAPI Framework
+uvicorn>=0.32.0  # ASGI Server
+pydantic>=2.9.2  # Data Validation
+pydantic-settings>=2.0.0  # Settings Management
 sqlalchemy>=2.0.0  # Database ORM
 python-jose>=3.3.0  # JWT Token
 passlib>=1.7.4  # Password Hashing
 python-multipart  # Form Data Processing
-python-dotenv  # Environment Variables
-python-certifi>=2024.2.2
-pyOpenSSL>=24.0.0
+python-dotenv>=1.0.0  # Environment Variables
+python-certifi>=2024.2.2  # SSL Certificate
+pyOpenSSL>=24.0.0  # SSL Library

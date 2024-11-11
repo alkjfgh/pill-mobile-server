@@ -6,13 +6,29 @@ from app.core.config import settings
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Pill Mobile API", description="Pill Mobile Backend API", version="1.0.0"
+        title=settings.PROJECT_NAME,
+        description="알약 이미지 분석 및 판별을 위한 REST API 서버",
+        version=settings.VERSION,
+        docs_url="/docs",  # Swagger UI URL
+        redoc_url="/redoc",  # ReDoc URL
+        openapi_url="/openapi.json",  # OpenAPI 스키마
+        swagger_ui_parameters={"defaultModelsExpandDepth": -1},  # 모델 섹션 숨기기
+        terms_of_service="https://github.com/alkjfgh",
+        contact={
+            "name": "API Support",
+            "url": "https://github.com/alkjfgh",
+            "email": "alkfgh@gmail.com",
+        },
+        license_info={
+            "name": "MIT License",
+            "url": "https://opensource.org/licenses/MIT",
+        },
     )
 
     # CORS 설정
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # 실제 프론트엔드 도메인
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
