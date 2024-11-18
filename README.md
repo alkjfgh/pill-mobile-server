@@ -9,7 +9,7 @@
 - 실시간 이미지 처리 및 결과 반환
 
 ## 기술 스택
-- Python 3.8+
+- Python 3.11+
 - FastAPI
 - PyTorch
 - OpenCV
