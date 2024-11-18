@@ -44,7 +44,14 @@ async def create_user(requestUser: UserLoginData):
         if is_user_exist:
             raise HTTPException(status_code=400, detail="User already exists")
 
-        new_user = User(requestUser)
+        user_data = {
+            "uid": requestUser.uid,
+            "email": requestUser.email,
+            "display_name": requestUser.display_name,
+            "photo_url": requestUser.photo_url,
+            "refresh_token": requestUser.stsTokenManager["refreshToken"],
+        }
+        new_user = User(**user_data)
         is_success = user_service.create_user(new_user)
         print("is_success: ", is_success)
 
@@ -53,7 +60,7 @@ async def create_user(requestUser: UserLoginData):
 
         return {"message": "Create user"}
     except Exception as e:
-        print(f"Error creating user: {str(e)}")  # 에러 로깅 추가
+        print(f"Error creating user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 

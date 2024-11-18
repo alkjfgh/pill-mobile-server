@@ -14,9 +14,16 @@ class User(Base):
     lastLoginAt = Column(DateTime, onupdate=func.now())
     refreshToken = Column(String(500))
 
-    def __init__(self, user: UserLoginData):
-        self.uid = user.uid
-        self.email = user.email
-        self.displayName = user.display_name
-        self.photoURL = user.photo_url
-        self.refreshToken = user.stsTokenManager["refreshToken"]
+    def __init__(
+        self,
+        uid: str,
+        email: str,
+        display_name: str = None,
+        photo_url: str = None,
+        refresh_token: str = None,
+    ):
+        self.uid = uid
+        self.email = email
+        self.displayName = display_name
+        self.photoURL = photo_url
+        self.refreshToken = refresh_token
