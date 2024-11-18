@@ -44,14 +44,14 @@ async def create_user(requestUser: UserLoginData):
         if is_user_exist:
             raise HTTPException(status_code=400, detail="User already exists")
 
-        user_data = {
-            "uid": requestUser.uid,
-            "email": requestUser.email,
-            "display_name": requestUser.display_name,
-            "photo_url": requestUser.photo_url,
-            "refresh_token": requestUser.stsTokenManager["refreshToken"],
-        }
-        new_user = User(**user_data)
+        new_user = User(
+            uid=requestUser.uid,
+            email=requestUser.email,
+            display_name=requestUser.display_name,
+            photo_url=requestUser.photo_url,
+            refresh_token=requestUser.stsTokenManager["refreshToken"],
+        )
+
         is_success = user_service.create_user(new_user)
         print("is_success: ", is_success)
 
