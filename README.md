@@ -24,12 +24,13 @@ cd [project directory]
 
 2. 가상환경 생성 및 활성화
 ```bash
-python -m venv venv
+python3.11 -m venv venv
 source venv/bin/activate # Windows: venv\Scripts\activate
 ```
 
 3. 필요한 패키지 설치
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
