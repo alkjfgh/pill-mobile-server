@@ -12,13 +12,13 @@ class UserService(BaseService[User]):
 
     def create_user(self, user: User) -> bool:
         try:
-            # User 객체를 직접 세션에 추가
-            self.db.session.add(user)
-            self.db.session.commit()
+            # self.db.session.add 대신 self.db.add 사용
+            self.db.add(user)
+            self.db.commit()
             return True
         except Exception as e:
             print(f"Error in create_user: {str(e)}")
-            self.db.session.rollback()
+            self.db.rollback()
             return False
 
     def update_user(self, user_id: str, user_data: dict):
