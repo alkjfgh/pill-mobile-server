@@ -65,6 +65,10 @@ DATABASE_URL=postgresql://user:password@localhost/dbname
 MODEL_PATH=./models/pill_classifier.pt
 ```
 
+## log 확인
+```bash
+sudo journalctl -u pill-server -f
+```
 
 ## 라이선스
 이 프로젝트는 MIT 라이선스 하에 배포됩니다.
