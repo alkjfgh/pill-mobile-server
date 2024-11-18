@@ -34,13 +34,17 @@ async def get_user(user_id: int):
     },
 )
 async def create_user(requestUser: UserLoginData):
+    print("requestUser: ", requestUser)
+
     user_service = UserService(db=db)
     is_user_exist = user_service.get_by_email(requestUser.email)
+    print("is_user_exist: ", is_user_exist)
     if is_user_exist:
         raise HTTPException(status_code=400, detail="User already exists")
 
     new_user = User(requestUser)
     is_success = user_service.create_user(new_user)
+    print("is_success: ", is_success)
     if not is_success:
         raise HTTPException(status_code=500, detail="Failed to create user")
 
