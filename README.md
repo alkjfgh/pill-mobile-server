@@ -39,6 +39,11 @@ pip install -r requirements.txt
 python run.py
 ```
 
+## 서버 업데이트
+```bash
+./pull.sh
+```
+
 서버는 기본적으로 https://localhost:8443 에서 실행됩니다.
 
 ## API 엔드포인트
