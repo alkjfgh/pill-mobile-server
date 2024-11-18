@@ -2,14 +2,20 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
-from app.core.config import settings
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 from app.db.base_class import Base
-from app.models.user import User  # 모든 모델 import
+from app.models.user import User
 
 # this is the Alembic Config object
 config = context.config
 
 # DB URL 설정
+from app.core.config import settings
+
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging
