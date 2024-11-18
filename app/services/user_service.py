@@ -10,9 +10,16 @@ class UserService(BaseService[User]):
     def get_by_email(self, email: str):
         return self.db.query(self.model).filter(self.model.email == email).first()
 
-    def create_user(self, user_data: dict):
-        # 사용자 생성 전 추가 검증이나 비즈니스 로직 수행
-        return self.create(user_data)
+    def create_user(self, user: User) -> bool:
+        try:
+            # User 객체를 직접 세션에 추가
+            self.db.session.add(user)
+            self.db.session.commit()
+            return True
+        except Exception as e:
+            print(f"Error in create_user: {str(e)}")
+            self.db.session.rollback()
+            return False
 
     def update_user(self, user_id: str, user_data: dict):
         # 사용자 업데이트 전 추가 검증이나 비즈니스 로직 수행
