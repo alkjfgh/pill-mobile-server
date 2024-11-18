@@ -70,6 +70,40 @@ MODEL_PATH=./models/pill_classifier.pt
 sudo journalctl -u pill-server -f
 ```
 
+## 데이터베이스 마이그레이션
+```bash
+alembic init alembic
+alembic revision --autogenerate -m "initial migration"
+alembic upgrade head
+```
+
+## 데이터베이스 변경 사항 적용
+```bash
+alembic revision --autogenerate -m "Add new column"
+alembic upgrade head
+```
+
+## 데이터 베이스 마이그레이션 관리
+# 현재 리비전 확인
+```bash
+alembic current
+```
+
+# 마이그레이션 히스토리 확인
+```bash
+alembic history
+```
+
+# 특정 리비전으로 롤백
+```bash
+alembic downgrade <revision_id>
+```
+
+# 한 단계 롤백
+```bash
+alembic downgrade -1
+```
+
 ## 라이선스
 이 프로젝트는 MIT 라이선스 하에 배포됩니다.
 
