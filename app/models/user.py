@@ -1,43 +1,24 @@
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    String,
-    Integer,
-    Text,
-    ForeignKey,
-    UniqueConstraint,
-)
-from sqlalchemy.sql import func
-from app.db.base_class import Base
+from sqlalchemy import Column, String, DateTime, func
+from sqlalchemy.ext.declarative import declarative_base
+from app.models.userDto import UserLoginData
+
+Base = declarative_base()
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    name = Column(String(100))
-    profile_image_url = Column(Text)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    last_login_at = Column(DateTime(timezone=True))
-    is_active = Column(Boolean, default=True)
+    uid = Column(String(100), primary_key=True)
+    email = Column(String(255), unique=True, nullable=False)
+    displayName = Column(String(100))
+    photoURL = Column(String(255))
+    createdAt = Column(DateTime, server_default=func.now())
+    lastLoginAt = Column(DateTime, onupdate=func.now())
+    refreshToken = Column(String(500))
 
-
-class OAuthAccount(Base):
-    __tablename__ = "oauth_accounts"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    provider = Column(String(20), nullable=False)
-    provider_user_id = Column(String(255), nullable=False)
-    access_token = Column(Text)
-    refresh_token = Column(Text)
-    expires_at = Column(DateTime(timezone=True))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    __table_args__ = (
-        UniqueConstraint("provider", "provider_user_id", name="provider_composite_key"),
-    )
+    def __init__(self, user: UserLoginData):
+        self.uid = user.uid
+        self.email = user.email
+        self.displayName = user.display_name
+        self.photoURL = user.photo_url
+        self.refreshToken = user.stsTokenManager["refreshToken"]

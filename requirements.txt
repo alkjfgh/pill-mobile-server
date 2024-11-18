@@ -9,3 +9,4 @@ python-multipart  # Form Data Processing
 python-dotenv>=1.0.0  # Environment Variables
 python-certifi>=2024.2.2  # SSL Certificate
 pyOpenSSL>=24.0.0  # SSL Library
+pymysql>=1.0.2  # MySQL Connector
