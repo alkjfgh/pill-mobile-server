@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base
+from app.db.base_class import Base
 from app.models.userDto import UserLoginData
-
-Base = declarative_base()
 
 
 class User(Base):
