@@ -38,6 +38,22 @@ async def get_user(user_id: int):
                 "application/json": {"example": {"detail": "User already exists"}}
             },
         },
+        422: {
+            "description": "유효하지 않은 요청 데이터입니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": [
+                            {
+                                "loc": ["body", "email"],
+                                "msg": "field required",
+                                "type": "value_error.missing"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
         500: {
             "description": "서버 오류로 사용자 생성에 실패했습니다.",
             "content": {
