@@ -28,9 +28,26 @@ async def get_user(user_id: int):
     summary="사용자 회원가입",
     description="새로운 사용자를 생성합니다. 이메일이 이미 존재하는 경우 생성할 수 없습니다.",
     responses={
-        200: {"description": "성공적으로 사용자를 생성했습니다."},
-        400: {"description": "이미 존재하는 사용자입니다."},
-        500: {"description": "서버 오류로 사용자 생성에 실패했습니다."},
+        200: {
+            "description": "성공적으로 사용자를 생성했습니다.",
+            "content": {"application/json": {"example": {"message": "Create user"}}},
+        },
+        400: {
+            "description": "이미 존재하는 사용자입니다.",
+            "content": {
+                "application/json": {"example": {"detail": "User already exists"}}
+            },
+        },
+        500: {
+            "description": "서버 오류로 사용자 생성에 실패했습니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Internal server error: Failed to create user"
+                    }
+                }
+            },
+        },
     },
 )
 async def create_user(requestUser: UserLoginData):
