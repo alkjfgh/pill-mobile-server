@@ -47,13 +47,13 @@ async def get_user(user_id: int):
                             {
                                 "loc": ["body", "email"],
                                 "msg": "field required",
-                                "type": "value_error.missing"
+                                "type": "value_error.missing",
                             }
                         ]
                     }
                 }
-            }
-        }
+            },
+        },
         500: {
             "description": "서버 오류로 사용자 생성에 실패했습니다.",
             "content": {
