@@ -1,6 +1,7 @@
 import torch
 from torchvision import models, transforms
 from PIL import Image
+import os
 
 
 class DisImageService:
@@ -21,9 +22,12 @@ class DisImageService:
             ]
         )
 
-        # ImageNet 클래스 레이블 로드
-        with open("imagenet_classes.txt", "r") as f:
-            self.categories = [line.strip() for line in f.readlines()]
+        # 절대 경로로 파일 위치 지정
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        classes_file = os.path.join(current_dir, "imagenet_classes.txt")
+
+        with open(classes_file, "r") as f:
+            self.categories = [s.strip() for s in f.readlines()]
 
     def predict_image(self, image_path):
         try:
