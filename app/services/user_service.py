@@ -13,7 +13,17 @@ class UserService(BaseService[User]):
         print("email: ", email)
         user = self.db.query(self.model).filter(self.model.email == email).first()
         print("user: ", user)
-        return user
+        if user:
+            return {
+                "uid": user.uid,
+                "email": user.email,
+                "displayName": user.displayName,
+                "photoURL": user.photoURL,
+                "createdAt": user.createdAt,
+                "lastLoginAt": user.lastLoginAt,
+                "refreshToken": user.refreshToken,
+            }
+        return None
 
     def create_user(self, user: User) -> bool:
         try:
