@@ -1,18 +1,18 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.services.base import BaseService
+from app.models.userDto import UserLoginData
 
 
 class UserService(BaseService[User]):
     def __init__(self, db: Session):
         super().__init__(User, db)
 
-    def get_by_email(self, email: str):
+    def get_by_email(self, email: str) -> User | None:
         return self.db.query(self.model).filter(self.model.email == email).first()
 
     def create_user(self, user: User) -> bool:
         try:
-            # self.db.session.add 대신 self.db.add 사용
             self.db.add(user)
             self.db.commit()
             return True
@@ -21,6 +21,11 @@ class UserService(BaseService[User]):
             self.db.rollback()
             return False
 
-    def update_user(self, user_id: str, user_data: dict):
-        # 사용자 업데이트 전 추가 검증이나 비즈니스 로직 수행
+    def login(self, requestUser: UserLoginData) -> bool:
+        user = self.get_by_email(requestUser.email)
+        if not user:
+            return False
+        return user.password == requestUser.password
+
+    def update_user(self, user_id: int, user_data: dict) -> bool:
         return self.update(user_id, user_data)
