@@ -9,7 +9,11 @@ class UserService(BaseService[User]):
         super().__init__(User, db)
 
     def get_by_email(self, email: str) -> User | None:
-        return self.db.query(self.model).filter(self.model.email == email).first()
+        print("userService get_by_email")
+        print("email: ", email)
+        user = self.db.query(self.model).filter(self.model.email == email).first()
+        print("user: ", user)
+        return user
 
     def create_user(self, user: User) -> bool:
         try:
