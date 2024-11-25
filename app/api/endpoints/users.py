@@ -30,7 +30,7 @@ router = APIRouter()
             },
         },
         404: {
-            "description": "사용���를 찾을 수 없습니다.",
+            "description": "사용자를 찾을 수 없습니다.",
             "content": {
                 "application/json": {
                     "example": {"detail": "사용자를 찾을 수 없습니다."}
