@@ -27,3 +27,6 @@ class User(Base):
         self.displayName = display_name
         self.photoURL = photo_url
         self.refreshToken = refresh_token
+
+    def __str__(self):
+        return f"User(uid={self.uid}, email={self.email}, displayName={self.displayName}, photoURL={self.photoURL}, createdAt={self.createdAt}, lastLoginAt={self.lastLoginAt}, refreshToken={self.refreshToken})"
