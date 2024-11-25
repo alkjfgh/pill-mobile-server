@@ -48,6 +48,8 @@ router = APIRouter()
     },
 )
 async def get_user(email: str):
+    print("users get_user")
+    print("email: ", email)
     try:
         user_service = UserService(db=db)
         user = user_service.get_by_email(email)
