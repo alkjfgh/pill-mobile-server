@@ -42,11 +42,11 @@ class DisImageService:
 
             # 가장 높은 확률의 클래스 가져오기
             _, predicted_idx = torch.max(outputs, 1)
-            predicted_label = self.categories[predicted_idx.item()]
+            predicted_label: str = self.categories[predicted_idx.item()]
             if len(predicted_label.split(",")) > 1:
-                return predicted_label.split(",")[1]
+                return predicted_label.split(",")[1].strip()
             else:
-                return predicted_label
+                return predicted_label.strip()
 
         except Exception as e:
             return f"에러 발생: {str(e)}"
