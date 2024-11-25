@@ -11,7 +11,7 @@ class UserService(BaseService[User]):
     def get_by_email(self, email: str) -> User | None:
         print("userService get_by_email")
         print("email: ", email)
-        user = self.db.get_one(self.model, email)
+        user = self.db.query(self.model).filter(self.model.email == email).first()
         print("user: ", user)
         return user
 
