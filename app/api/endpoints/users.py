@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, Union
+from typing import Dict, Any
 from app.db.base_class import db
 from app.models.user import User
 from app.models.userDto import UserLoginData
@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get(
     "/{email}",
-    response_model=Dict[str, Union[str, UserLoginData]],
+    response_model=Dict[str, Any],
     summary="사용자 정보 조회",
     description="주어진 user_id에 해당하는 사용자의 정보를 조회합니다.",
     responses={
@@ -58,11 +58,11 @@ async def get_user(email: str):
 
         print("find user: ", user)
 
-        user_dict = UserLoginData(
-            email=user.email,
-            display_name=user.displayName,
-            photo_url=user.photoURL,
-        )
+        user_dict = {
+            "email": user.email,
+            "displayName": user.displayName,
+            "photoURL": user.photoURL,
+        }
 
         return {"message": f"Get user {user.email}", "user": user_dict}
     except Exception as e:
