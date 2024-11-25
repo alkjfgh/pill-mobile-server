@@ -53,10 +53,16 @@ async def get_user(email: str):
     try:
         user_service = UserService(db=db)
         user = user_service.get_by_email(email)
-        if not user:
+        if user is None:
             raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
 
-        return {"message": f"Get user {user.email}", "user": user}
+        user_dict = {
+            "email": user.email,
+            "display_name": user.display_name,
+            "photo_url": user.photo_url,
+        }
+
+        return {"message": f"Get user {user.email}", "user": user_dict}
     except Exception as e:
         print(f"Error getting user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
