@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from PIL import Image
 import io
+from app.services.DisImageService import DisImageService
+import os
 
 router = APIRouter()
+disImageService = DisImageService()
 
 
 @router.post(
@@ -49,23 +52,32 @@ async def disPill(request: UploadFile = File(...)):
         # 이미지 파일 유효성 검사
         try:
             image = Image.open(io.BytesIO(contents))
-            image.verify()  # 이미지 파일 검증
+            # 이미지 검증
+            image.verify()
 
-            # # 이미지 크기 제한 검사 (선택사항)
-            # if image.size[0] > 5000 or image.size[1] > 5000:
-            #     raise HTTPException(
-            #         status_code=400,
-            #         detail="이미지 크기가 너무 큽니다. 5000x5000 이하의 이미지를 업로드해주세요.",
-            #     )
+            # 새로운 이미지 객체 생성 (verify 후에는 파일을 다시 열어야 함)
+            image = Image.open(io.BytesIO(contents))
+
+            # 현재 디렉토리 기준으로 상대 경로 설정
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            image_dir = os.path.join(current_dir, "../../../images")
+            os.makedirs(image_dir, exist_ok=True)
+
+            image_path = os.path.join(image_dir, request.filename)
+            image.save(image_path)
+
+            # 이미지 처리 로직
+            pill_name = disImageService.predict_image(image_path)
+
+            # 처리 후 이미지 파일 삭제 (선택사항)
+            os.remove(image_path)
+
+            return {"message": "알약 이미지 판별 성공", "pill_name": pill_name}
 
         except Exception as e:
             raise HTTPException(
                 status_code=400, detail="유효하지 않은 이미지 파일입니다"
             )
-
-        # 여기에 이미지 처리 로직 추가
-        pill_name = "알약 이름"
-        return {"message": "알약 이미지 판별 성공", "pill_name": pill_name}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
