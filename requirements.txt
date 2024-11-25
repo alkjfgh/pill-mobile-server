@@ -13,3 +13,6 @@ pymysql>=1.0.2  # MySQL Connector
 alembic>=1.14.0  # Database Migration
 email-validator>=2.2.0  # Email Validation
 Pillow>=11.0.0  # Image Processing
+torch>=2.1.1  # PyTorch
+torchvision>=0.20.1  # PyTorch Vision
+tensorflow>=2.18.0  # TensorFlow

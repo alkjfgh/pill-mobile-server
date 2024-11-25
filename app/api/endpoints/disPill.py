@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from PIL import Image
 import io
+from app.services.DisImageService import DisImageService
 
 router = APIRouter()
+disImageService = DisImageService()
 
 
 @router.post(
@@ -63,8 +65,10 @@ async def disPill(request: UploadFile = File(...)):
                 status_code=400, detail="유효하지 않은 이미지 파일입니다"
             )
 
+        path = f"../../../images/{image.filename or request.filename}"
+        image.save(path)
         # 여기에 이미지 처리 로직 추가
-        pill_name = "알약 이름"
+        pill_name = disImageService.predict_image(path)
         return {"message": "알약 이미지 판별 성공", "pill_name": pill_name}
 
     except Exception as e:
