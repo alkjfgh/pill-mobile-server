@@ -14,12 +14,50 @@ router = APIRouter()
     summary="사용자 정보 조회",
     description="주어진 user_id에 해당하는 사용자의 정보를 조회합니다.",
     responses={
-        200: {"description": "성공적으로 사용자 정보를 조회했습니다."},
-        404: {"description": "사용자를 찾을 수 없습니다."},
+        200: {
+            "description": "성공적으로 사용자 정보를 조회했습니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Get user example@email.com",
+                        "user": {
+                            "email": "example@email.com",
+                            "display_name": "Example User",
+                            "photo_url": "https://example.com/photo.jpg",
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "사용자를 찾을 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "사용자를 찾을 수 없습니다."}
+                }
+            },
+        },
+        500: {
+            "description": "서버 오류로 사용자 정보를 조회할 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Internal server error: Failed to get user"}
+                }
+            },
+        },
     },
 )
-async def get_user(user_id: int):
-    return {"message": f"Get user {user_id}"}
+async def get_user(email: str):
+    try:
+        user_service = UserService(db=db)
+        user = user_service.get_by_email(email)
+        if not user:
+            raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+
+        return {"message": f"Get user {user.email}", "user": user}
+    except Exception as e:
+        print(f"Error getting user: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.post(
@@ -30,7 +68,9 @@ async def get_user(user_id: int):
     responses={
         200: {
             "description": "성공적으로 사용자를 생성했습니다.",
-            "content": {"application/json": {"example": {"message": "Create user"}}},
+            "content": {
+                "application/json": {"example": {"message": "Create user {email}"}}
+            },
         },
         400: {
             "description": "이미 존재하는 사용자입니다.",
@@ -91,7 +131,7 @@ async def create_user(requestUser: UserLoginData):
         if not is_success:
             raise HTTPException(status_code=500, detail="Failed to create user")
 
-        return {"message": "Create user"}
+        return {"message": f"Create user {new_user.email}"}
     except Exception as e:
         print(f"Error creating user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -103,12 +143,41 @@ async def create_user(requestUser: UserLoginData):
     summary="사용자 로그인",
     description="사용자 인증을 수행하고 로그인합니다.",
     responses={
-        200: {"description": "성공적으로 로그인했습니다."},
-        401: {"description": "인증에 실패했습니다."},
+        200: {
+            "description": "성공적으로 로그인했습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login user example@email.com"}
+                }
+            },
+        },
+        401: {
+            "description": "인증에 실패했습니다.",
+            "content": {
+                "application/json": {"example": {"detail": "인증에 실패했습니다."}}
+            },
+        },
+        500: {
+            "description": "서버 오류로 로그인에 실패했습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Internal server error: Failed to login"}
+                }
+            },
+        },
     },
 )
-async def login_user():
-    return {"message": "Login user"}
+async def login_user(requestUser: UserLoginData):
+    try:
+        user_service = UserService(db=db)
+        is_success = user_service.login(requestUser)
+        if not is_success:
+            raise HTTPException(status_code=401, detail="인증에 실패했습니다.")
+
+        return {"message": f"Login user {requestUser.email}"}
+    except Exception as e:
+        print(f"Error logging in: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.put(
@@ -117,9 +186,40 @@ async def login_user():
     summary="사용자 정보 수정",
     description="주어진 user_id에 해당하는 사용자의 정보를 수정합니다.",
     responses={
-        200: {"description": "성공적으로 사용자 정보를 수정했습니다."},
-        404: {"description": "사용자를 찾을 수 없습니다."},
+        200: {
+            "description": "성공적으로 사용자 정보를 수정했습니다.",
+            "content": {
+                "application/json": {"example": {"message": "Update user 123"}}
+            },
+        },
+        404: {
+            "description": "사용자를 찾을 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "사용자를 찾을 수 없습니다."}
+                }
+            },
+        },
+        500: {
+            "description": "서버 오류로 사용자 정보를 수정할 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Internal server error: Failed to update user"
+                    }
+                }
+            },
+        },
     },
 )
 async def update_user(user_id: int):
-    return {"message": f"Update user {user_id}"}
+    try:
+        user_service = UserService(db=db)
+        is_success = user_service.update_user(user_id)
+        if not is_success:
+            raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+
+        return {"message": f"Update user {user_id}"}
+    except Exception as e:
+        print(f"Error updating user: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
