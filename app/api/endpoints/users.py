@@ -60,8 +60,8 @@ async def get_user(email: str):
 
         user_dict = {
             "email": user.email,
-            "display_name": user.display_name,
-            "photo_url": user.photo_url,
+            "display_name": user.displayName,
+            "photo_url": user.photoURL,
         }
 
         return {"message": f"Get user {user.email}", "user": user_dict}
