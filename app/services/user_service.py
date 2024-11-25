@@ -27,5 +27,16 @@ class UserService(BaseService[User]):
             return False
         return user.password == requestUser.password
 
-    def update_user(self, user_id: int, user_data: dict) -> bool:
-        return self.update(user_id, user_data)
+    def update_user(self, email: str, user_data: dict) -> bool:
+        user = self.get_by_email(email)
+        if not user:
+            return False
+        return self.update(user, user_data)
+
+    def delete_user(self, email: str) -> bool:
+        user = self.get_by_email(email)
+        if not user:
+            return False
+        self.db.delete(user)
+        self.db.commit()
+        return True
