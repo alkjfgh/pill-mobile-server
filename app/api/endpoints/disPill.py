@@ -10,7 +10,7 @@ router = APIRouter()
     summary="알약 이미지 판별 API",
     description="업로드된 알약 이미지를 분석하여 알약의 이름을 반환합니다",
     response_description="알약 판별 결과",
-    tags=["discrimination pill"],
+    tags=["disPil"],
     responses={
         200: {
             "description": "성공적으로 알약을 판별했을 때의 응답",
