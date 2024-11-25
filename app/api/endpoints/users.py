@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{user_id}",
+    "/{email}",
     response_model=Dict[str, str],
     summary="사용자 정보 조회",
     description="주어진 user_id에 해당하는 사용자의 정보를 조회합니다.",
@@ -30,7 +30,7 @@ router = APIRouter()
             },
         },
         404: {
-            "description": "사용자를 찾을 수 없습니다.",
+            "description": "사용���를 찾을 수 없습니다.",
             "content": {
                 "application/json": {
                     "example": {"detail": "사용자를 찾을 수 없습니다."}
@@ -180,16 +180,18 @@ async def login_user(requestUser: UserLoginData):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.put(
-    "/{user_id}",
+@router.post(
+    "/update",
     response_model=Dict[str, str],
     summary="사용자 정보 수정",
-    description="주어진 user_id에 해당하는 사용자의 정보를 수정합니다.",
+    description="주어진 이메일에 해당하는 사용자의 정보를 수정합니다. 수정 가능한 필드: display_name, photo_url",
     responses={
         200: {
             "description": "성공적으로 사용자 정보를 수정했습니다.",
             "content": {
-                "application/json": {"example": {"message": "Update user 123"}}
+                "application/json": {
+                    "example": {"message": "Update user example@email.com"}
+                }
             },
         },
         404: {
@@ -197,6 +199,22 @@ async def login_user(requestUser: UserLoginData):
             "content": {
                 "application/json": {
                     "example": {"detail": "사용자를 찾을 수 없습니다."}
+                }
+            },
+        },
+        422: {
+            "description": "유효하지 않은 요청 데이터입니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": [
+                            {
+                                "loc": ["body", "email"],
+                                "msg": "field required",
+                                "type": "value_error.missing",
+                            }
+                        ]
+                    }
                 }
             },
         },
@@ -212,14 +230,61 @@ async def login_user(requestUser: UserLoginData):
         },
     },
 )
-async def update_user(user_id: int):
+async def update_user(email: str, user_data: dict):
     try:
         user_service = UserService(db=db)
-        is_success = user_service.update_user(user_id)
+        is_success = user_service.update_user(email, user_data)
         if not is_success:
             raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
 
-        return {"message": f"Update user {user_id}"}
+        return {"message": f"Update user {email}"}
     except Exception as e:
         print(f"Error updating user: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.delete(
+    "/{email}",
+    response_model=Dict[str, str],
+    summary="사용자 삭제",
+    description="주어진 이메일에 해당하는 사용자를 삭제합니다.",
+    responses={
+        200: {
+            "description": "성공적으로 사용자를 삭제했습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Delete user example@email.com"}
+                }
+            },
+        },
+        404: {
+            "description": "사용자를 찾을 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "사용자를 찾을 수 없습니다."}
+                }
+            },
+        },
+        500: {
+            "description": "서버 오류로 사용자를 삭제할 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Internal server error: Failed to delete user"
+                    }
+                }
+            },
+        },
+    },
+)
+async def delete_user(email: str):
+    try:
+        user_service = UserService(db=db)
+        is_success = user_service.delete_user(email)
+        if not is_success:
+            raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+
+        return {"message": f"Delete user {email}"}
+    except Exception as e:
+        print(f"Error deleting user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
