@@ -154,49 +154,60 @@ async def create_log(
 
 @router.get(
     "/{email}",
-    summary="사용자 로그 조회 API",
-    description="특정 사용자의 모든 알약 판별 기록을 조회합니다",
-    response_description="사용자의 로그 목록",
+    summary="사용자 로그 조회",
+    description="주어진 이메일에 해당하는 사용자의 로그를 조회합니다.",
     responses={
         200: {
-            "description": "로그 조회 성공",
+            "description": "성공적으로 로그를 조회했습니다.",
             "content": {
                 "application/json": {
-                    "example": [
-                        {
-                            "email": "user@example.com",
-                            "image_path": "uploads/user_20240320_123456.jpg",
-                            "result": "타이레놀",
-                            "date": "2024-03-20T12:34:56",
-                        }
-                    ]
+                    "example": {"message": "Get logs for example@email.com", "logs": []}
                 }
             },
-        }
+        },
+        400: {
+            "description": "잘못된 요청",
+            "content": {
+                "application/json": {"example": {"detail": "이메일이 필요합니다"}}
+            },
+        },
+        404: {
+            "description": "사용자를 찾을 수 없습니다.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "존재하지 않는 사용자입니다"}
+                }
+            },
+        },
     },
 )
 async def get_logs(email: str):
+    print("logs get_logs")
+    print("email: ", email)
     try:
         if not email:
             raise HTTPException(status_code=400, detail="이메일이 필요합니다")
 
-        # 사용자 존재 여부 확인
-        user = UserService.get_by_email(email)
+        user_service = UserService(db=db)
+        user = user_service.get_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
-        logs = LogService.get_logs(email)
-        if not logs:
-            return []
+        log_service = LogService(db=db)
+        logs = log_service.get_logs(email)
 
-        # 이미지 파일 존재 여부 확인 추가
+        # 로그 데이터 처리
+        processed_logs = []
         for log in logs:
-            if not os.path.exists(log.image):
-                log.image = None  # 또는 기본 이미지 경로
+            log_dict = log.dict()
+            if not os.path.exists(log_dict["image"]):
+                log_dict["image"] = None
+            processed_logs.append(log_dict)
 
-        return logs
-
-    except HTTPException as he:
-        raise he
+        return {
+            "message": f"Get logs for {email}",
+            "logs": processed_logs if processed_logs else [],
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail="로그 조회 중 오류가 발생했습니다")
+        print(f"Error getting logs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
