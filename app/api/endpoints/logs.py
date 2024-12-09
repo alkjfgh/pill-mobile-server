@@ -107,9 +107,26 @@ async def create_log(
             f.write(contents)
         print(9)
 
-        # 로그 생성 및 저장
-        log = Log(email=email, image_path=str(file_path), result=result, date=date)
-        LogService.create_log(log)
+        try:
+            # 로그 생성 및 저장
+            log = Log(email=email, image=str(file_path), result=result, date=date)
+            print(f"생성된 로그 객체: {log.__dict__}")
+            log_service = LogService(db=db)
+            isSuccess = log_service.create_log(log)
+            if not isSuccess:
+                raise HTTPException(
+                    status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다"
+                )
+            print(f"로그 저장 완료")
+        except Exception as e:
+            print(f"로그 생성/저장 중 오류 발생: {str(e)}")
+            print(f"에러 타입: {type(e).__name__}")
+            print(f"상세 에러: {e.__dict__}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"로그 생성/저장 중 오류가 발생했습니다: {str(e)}",
+            )
+
         print(10)
 
         return {"message": "로그가 생성되었습니다"}
@@ -151,8 +168,7 @@ async def get_logs(email: str):
             raise HTTPException(status_code=400, detail="이메일이 필요합니다")
 
         # 사용자 존재 여부 확인
-        user_service = UserService(db=db)
-        user = user_service.get_by_email(email)
+        user = UserService.get_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
