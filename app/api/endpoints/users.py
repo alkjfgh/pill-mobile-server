@@ -65,7 +65,7 @@ async def get_user(email: str):
             "lastLoginAt": user.lastLoginAt.isoformat() if user.lastLoginAt else None,
         }
 
-        return {"message": f"Get user {user.email}", "user": user_dict}
+        return {"message": f"Get user {email}", "user": user_dict}
     except Exception as e:
         print(f"Error getting user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
