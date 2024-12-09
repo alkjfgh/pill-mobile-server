@@ -75,13 +75,14 @@ async def create_log(
 
         # 이미지 저장 경로 설정
         upload_dir = os.getenv("UPLOAD_DIR", "uploads")
-        os.makedirs(upload_dir, exist_ok=True)
+        upload_path = Path(upload_dir).resolve()  # 절대 경로로 변환
+        upload_path.mkdir(parents=True, exist_ok=True)  # 상위 디렉토리까지 생성
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_email = re.sub(r"[^a-zA-Z0-9]", "_", email)
         filename = f"{safe_email}_{timestamp}.{file_extension}"
-        file_path = Path(upload_dir) / filename
+        file_path = upload_path / filename
 
         # 이미지 저장
         with open(file_path, "wb") as f:
@@ -139,10 +140,11 @@ async def get_logs(email: str):
         if not logs:
             return []
 
-        # 이미지 파일 존재 여부 확인 추가
+        # 이미지 파일 존재 여부 확인 개선
         for log in logs:
-            if not os.path.exists(log.image):
-                log.image = None  # 또는 기본 이미지 경로
+            image_path = Path(log.image)
+            if not image_path.is_file():
+                log.image = None
 
         return logs
 
