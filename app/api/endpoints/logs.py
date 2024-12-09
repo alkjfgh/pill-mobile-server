@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 import re
+from app.db.base_class import db
 
 router = APIRouter()
 
@@ -75,7 +76,8 @@ async def create_log(
 
         try:
             # 사용자 존재 여부 확인
-            user = UserService.get_by_email(email)
+            user_service = UserService(db=db)
+            user = user_service.get_by_email(email)
             if not user:
                 raise HTTPException(
                     status_code=404, detail="존재하지 않는 사용자입니다"
@@ -149,7 +151,8 @@ async def get_logs(email: str):
             raise HTTPException(status_code=400, detail="이메일이 필요합니다")
 
         # 사용자 존재 여부 확인
-        user = UserService.get_by_email(email)
+        user_service = UserService(db=db)
+        user = user_service.get_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
