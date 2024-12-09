@@ -73,16 +73,16 @@ async def create_log(
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
-        # 이미지 저장 경로를 홈 디렉토리 아래 pill/uploads로 고정
-        home_dir = str(Path.home())
-        upload_path = Path(home_dir) / "pill" / "uploads"
-        upload_path.mkdir(parents=True, exist_ok=True)  # 디렉토리가 없으면 생성
+        # 프로젝트 루트 디렉토리 기준으로 uploads 폴더 생성
+        current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        upload_path = os.path.join(current_dir, 'uploads')
+        os.makedirs(upload_path, exist_ok=True)
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_email = re.sub(r"[^a-zA-Z0-9]", "_", email)
         filename = f"{safe_email}_{timestamp}.{file_extension}"
-        file_path = upload_path / filename
+        file_path = os.path.join(upload_path, filename)
 
         # 이미지 저장
         with open(file_path, "wb") as f:
