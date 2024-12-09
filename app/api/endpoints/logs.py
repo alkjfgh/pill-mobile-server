@@ -73,10 +73,19 @@ async def create_log(
         await image.seek(0)
         print(5)
 
-        # 사용자 존재 여부 확인
-        user = UserService.get_by_email(email)
-        if not user:
-            raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
+        try:
+            # 사용자 존재 여부 확인
+            user = UserService.get_by_email(email)
+            if not user:
+                raise HTTPException(
+                    status_code=404, detail="존재하지 않는 사용자입니다"
+                )
+            print(6)
+        except Exception as e:
+            print(f"UserService 오류: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"사용자 조회 중 오류가 발생했습니다: {str(e)}"
+            )
         print(6)
 
         # 이미지 저장 경로 설정
