@@ -73,10 +73,10 @@ async def create_log(
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
-        # 이미지 저장 경로 설정
-        upload_dir = os.getenv("UPLOAD_DIR", "uploads")
-        upload_path = Path(upload_dir).resolve()  # 절대 경로로 변환
-        upload_path.mkdir(parents=True, exist_ok=True)  # 상위 디렉토리까지 생성
+        # 이미지 저장 경로를 홈 디렉토리 아래 pill/uploads로 고정
+        home_dir = str(Path.home())
+        upload_path = Path(home_dir) / "pill" / "uploads"
+        upload_path.mkdir(parents=True, exist_ok=True)  # 디렉토리가 없으면 생성
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
