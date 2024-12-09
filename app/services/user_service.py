@@ -11,9 +11,13 @@ class UserService(BaseService[User]):
     def get_by_email(self, email: str) -> User | None:
         print("userService get_by_email")
         print("email: ", email)
-        user = self.db.query(self.model).filter(self.model.email == email).first()
-        print("user: ", user)
-        return user
+        try:
+            user = self.db.query(self.model).filter(self.model.email == email).first()
+            print("user: ", user)
+            return user
+        except Exception as e:
+            print(f"Error in get_by_email: {str(e)}")
+            return None
 
     def create_user(self, user: User) -> bool:
         try:
