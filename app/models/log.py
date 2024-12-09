@@ -12,7 +12,7 @@ class Log(Base):
     result = Column(String(255))
     email = Column(String(255))
 
-    def __init__(self, date: str, image: str, result: str, email: str):
+    def __init__(self, date: DateTime, image: str, result: str, email: str):
         self.id = uuid.uuid4()
         self.date = date
         self.image = image
