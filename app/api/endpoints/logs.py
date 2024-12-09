@@ -7,6 +7,8 @@ from datetime import datetime
 from pathlib import Path
 import re
 from app.db.base_class import db
+from datetime import datetime
+import locale
 
 router = APIRouter()
 
@@ -102,6 +104,15 @@ async def create_log(
             print(f"file_path: {file_path}, type: {type(file_path)}")
             print(f"result: {result}, type: {type(result)}")
             print(f"date: {date}, type: {type(date)}")
+            try:
+                # 한국어 로케일 설정
+                locale.setlocale(locale.LC_TIME, "ko_KR.UTF-8")
+                # 입력된 날짜 문자열을 datetime 객체로 변환
+                parsed_date = datetime.strptime(date, "%Y. %m. %d. 오후 %I:%M:%S")
+                # MySQL datetime 형식으로 변환
+                formatted_date = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError as e:
+                raise HTTPException(status_code=400, detail="잘못된 날짜 형식입니다")
             log = Log(email=email, image=str(file_path), result=result, date=date)
             print(f"생성된 로그 객체: {log.__dict__}")
             log_service = LogService(db=db)
