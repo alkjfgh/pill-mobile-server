@@ -1,11 +1,7 @@
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-from app.db.base_class import db
-from app.models.user import User
+from fastapi import APIRouter, HTTPException, Form, UploadFile, File
 from app.services.user_service import UserService
 from app.models.log import Log
 from app.services.log_service import LogService
-from app.models.logDto import LogDto
 import os
 from datetime import datetime
 from pathlib import Path
@@ -39,34 +35,41 @@ router = APIRouter()
         },
     },
 )
-async def create_log(logDto: LogDto):
+async def create_log(
+    email: str = Form(...),
+    image: UploadFile = File(...),
+    result: str = Form(...),
+    date: str = Form(...),
+):
     try:
         # 이메일 유효성 검사
-        if not logDto.email:
+        if not email:
             raise HTTPException(status_code=400, detail="이메일이 필요합니다")
 
         # 파일 확장자 검사
         ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-        if not logDto.image:
+        if not image:
             raise HTTPException(status_code=400, detail="이미지 파일이 필요합니다")
 
-        file_extension = logDto.image.filename.lower().split(".")[-1]
+        file_extension = image.filename.lower().split(".")[-1]
         if file_extension not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=400, detail="PNG, JPG, JPEG 형식의 이미지 파일만 허용됩니다"
             )
 
-        # 파일 크기 제한 (예: 10MB)
-        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB in bytes
-        if await logDto.image.read(MAX_FILE_SIZE + 1):
-            await logDto.image.seek(0)  # 파일 포인터 리셋
+        # 파일 크기 제한 (10MB)
+        MAX_FILE_SIZE = 10 * 1024 * 1024
+        contents = await image.read(MAX_FILE_SIZE + 1)
+        if len(contents) > MAX_FILE_SIZE:
             raise HTTPException(
                 status_code=400, detail="파일 크기는 10MB를 초과할 수 없습니다"
             )
-        await logDto.image.seek(0)  # 파일 포인터 다시 리셋
+
+        # 파일 포인터 리셋
+        await image.seek(0)
 
         # 사용자 존재 여부 확인
-        user = UserService.get_by_email(logDto.email)
+        user = UserService.get_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
@@ -76,41 +79,26 @@ async def create_log(logDto: LogDto):
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_email = re.sub(r"[^a-zA-Z0-9]", "_", logDto.email)
+        safe_email = re.sub(r"[^a-zA-Z0-9]", "_", email)
         filename = f"{safe_email}_{timestamp}.{file_extension}"
         file_path = Path(upload_dir) / filename
 
-        # 이미지를 청크 단위로 저장
-        CHUNK_SIZE = 1024 * 1024  # 1MB 청크 사이즈
-        try:
-            with open(file_path, "wb") as f:
-                while chunk := await logDto.image.read(CHUNK_SIZE):
-                    f.write(chunk)
-        except Exception as e:
-            # 파일 저장 실패시 생성된 파일 삭제
-            if file_path.exists():
-                file_path.unlink()
-            raise HTTPException(status_code=500, detail="이미지 파일 저장 중 오류가 발생했습니다")
+        # 이미지 저장
+        with open(file_path, "wb") as f:
+            f.write(contents)
 
         # 로그 생성 및 저장
-        log = Log(
-            email=logDto.email,
-            image_path=str(file_path),
-            result=logDto.result,
-            date=logDto.date,
-        )
+        log = Log(email=email, image_path=str(file_path), result=result, date=date)
         LogService.create_log(log)
 
         return {"message": "로그가 생성되었습니다"}
 
     except HTTPException as he:
         raise he
-    except IOError as e:
-        raise HTTPException(
-            status_code=500, detail="이미지 파일 저장 중 오류가 발생했습니다"
-        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail="로그 생성 중 오류가 발생했습니다")
+        raise HTTPException(
+            status_code=500, detail=f"로그 생성 중 오류가 발생했습니다: {str(e)}"
+        )
 
 
 @router.get(
