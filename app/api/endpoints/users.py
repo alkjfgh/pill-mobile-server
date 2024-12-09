@@ -56,12 +56,13 @@ async def get_user(email: str):
         if user is None:
             raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
 
-        print("find user: ", user)
-
         user_dict = {
             "email": user.email,
             "displayName": user.displayName,
             "photoURL": user.photoURL,
+            "uid": user.uid,
+            "createdAt": user.createdAt.isoformat() if user.createdAt else None,
+            "lastLoginAt": user.lastLoginAt.isoformat() if user.lastLoginAt else None,
         }
 
         return {"message": f"Get user {user.email}", "user": user_dict}
