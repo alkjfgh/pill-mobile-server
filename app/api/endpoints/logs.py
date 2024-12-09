@@ -105,15 +105,24 @@ async def create_log(
             print(f"result: {result}, type: {type(result)}")
             print(f"date: {date}, type: {type(date)}")
             try:
-                # 한국어 로케일 설정
-                locale.setlocale(locale.LC_TIME, "ko_KR.UTF-8")
+                # 한국어 로케일 설정 시도
+                try:
+                    locale.setlocale(locale.LC_TIME, "ko_KR.UTF-8")
+                except locale.Error:
+                    # 로케일 설정 실패 시 기본값 사용
+                    locale.setlocale(locale.LC_TIME, "")
+
                 # 입력된 날짜 문자열을 datetime 객체로 변환
                 parsed_date = datetime.strptime(date, "%Y. %m. %d. 오후 %I:%M:%S")
                 # MySQL datetime 형식으로 변환
                 formatted_date = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
             except ValueError as e:
                 raise HTTPException(status_code=400, detail="잘못된 날짜 형식입니다")
-            log = Log(email=email, image=str(file_path), result=result, date=date)
+
+            # formatted_date를 사용하도록 수정
+            log = Log(
+                email=email, image=str(file_path), result=result, date=formatted_date
+            )
             print(f"생성된 로그 객체: {log.__dict__}")
             log_service = LogService(db=db)
             isSuccess = log_service.create_log(log)
