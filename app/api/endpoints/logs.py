@@ -74,7 +74,8 @@ async def create_log(
             raise HTTPException(status_code=404, detail="존재하지 않는 사용자입니다")
 
         # 이미지 저장 경로 설정
-        upload_dir = "~/pill/uploads"
+        upload_dir = os.path.expanduser("~/pill/uploads")
+        os.makedirs(upload_dir, exist_ok=True)
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
