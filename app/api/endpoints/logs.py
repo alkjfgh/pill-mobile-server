@@ -199,7 +199,12 @@ async def get_logs(email: str):
         # 로그 데이터 처리
         processed_logs = []
         for log in logs:
-            log_dict = log.dict()
+            log_dict = {
+                "email": log.email,
+                "image": log.image,
+                "result": log.result,
+                "date": log.date.strftime("%Y-%m-%d %H:%M:%S") if log.date else None,
+            }
             if not os.path.exists(log_dict["image"]):
                 log_dict["image"] = None
             processed_logs.append(log_dict)
