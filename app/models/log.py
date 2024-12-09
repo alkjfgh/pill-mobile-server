@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, DateTime, func
+from sqlalchemy.dialects.postgresql import UUID
 from app.db.base_class import Base
 import uuid
 
@@ -6,14 +7,13 @@ import uuid
 class Log(Base):
     __tablename__ = "logs"
 
-    id = Column(String(100), primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date = Column(DateTime, server_default=func.now())
     image = Column(String(255))
     result = Column(String(255))
     email = Column(String(255))
 
     def __init__(self, date: DateTime, image: str, result: str, email: str):
-        self.id = uuid.uuid4()
         self.date = date
         self.image = image
         self.result = result
