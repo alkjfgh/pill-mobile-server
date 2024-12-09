@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from app.db.base_class import Base
 from app.models.user import User
+from app.models.log import Log
 
 # this is the Alembic Config object
 config = context.config
