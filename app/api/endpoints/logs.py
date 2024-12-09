@@ -46,20 +46,17 @@ async def create_log(
         # 이메일 유효성 검사
         if not email:
             raise HTTPException(status_code=400, detail="이메일이 필요합니다")
-        print(1)
 
         # 파일 확장자 검사
         ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
         if not image:
             raise HTTPException(status_code=400, detail="이미지 파일이 필요합니다")
-        print(2)
 
         file_extension = image.filename.lower().split(".")[-1]
         if file_extension not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=400, detail="PNG, JPG, JPEG 형식의 이미지 파일만 허용됩니다"
             )
-        print(3)
 
         # 파일 크기 제한 (10MB)
         MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -68,11 +65,9 @@ async def create_log(
             raise HTTPException(
                 status_code=400, detail="파일 크기는 10MB를 초과할 수 없습니다"
             )
-        print(4)
 
         # 파일 포인터 리셋
         await image.seek(0)
-        print(5)
 
         try:
             # 사용자 존재 여부 확인
@@ -82,33 +77,31 @@ async def create_log(
                 raise HTTPException(
                     status_code=404, detail="존재하지 않는 사용자입니다"
                 )
-            print(6)
         except Exception as e:
             print(f"UserService 오류: {str(e)}")
             raise HTTPException(
                 status_code=500, detail=f"사용자 조회 중 오류가 발생했습니다: {str(e)}"
             )
-        print(6)
 
         # 이미지 저장 경로 설정
         upload_dir = os.path.expanduser("~/pill/uploads")
         os.makedirs(upload_dir, exist_ok=True)
-        print(7)
 
         # 고유한 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_email = re.sub(r"[^a-zA-Z0-9]", "_", email)
         filename = f"{safe_email}_{timestamp}.{file_extension}"
         file_path = Path(upload_dir) / filename
-        print(8)
 
         # 이미지 저장
         with open(file_path, "wb") as f:
             f.write(contents)
-        print(9)
 
         try:
             # 로그 생성 및 저장
+            print(f"file_path: {file_path}, type: {type(file_path)}")
+            print(f"result: {result}, type: {type(result)}")
+            print(f"date: {date}, type: {type(date)}")
             log = Log(email=email, image=str(file_path), result=result, date=date)
             print(f"생성된 로그 객체: {log.__dict__}")
             log_service = LogService(db=db)
