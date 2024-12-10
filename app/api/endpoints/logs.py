@@ -18,6 +18,7 @@ router = APIRouter()
     summary="로그 생성 API",
     description="사용자의 알약 판별 결과를 로그로 저장합니다",
     response_description="로그 생성 결과",
+    tags=["logs"],
     responses={
         200: {
             "description": "로그가 성공적으로 생성되었을 때의 응답",
@@ -156,6 +157,7 @@ async def create_log(
     "/{email}",
     summary="사용자 로그 조회",
     description="주어진 이메일에 해당하는 사용자의 로그를 조회합니다.",
+    tags=["logs"],
     responses={
         200: {
             "description": "성공적으로 로그를 조회했습니다.",

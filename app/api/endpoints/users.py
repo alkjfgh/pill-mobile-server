@@ -13,6 +13,7 @@ router = APIRouter()
     response_model=Dict[str, Any],
     summary="사용자 정보 조회",
     description="주어진 user_id에 해당하는 사용자의 정보를 조회합니다.",
+    tags=["users"],
     responses={
         200: {
             "description": "성공적으로 사용자 정보를 조회했습니다.",
@@ -76,6 +77,7 @@ async def get_user(email: str):
     response_model=Dict[str, str],
     summary="사용자 회원가입",
     description="새로운 사용자를 생성합니다. 이메일이 이미 존재하는 경우 생성할 수 없습니다.",
+    tags=["users"],
     responses={
         200: {
             "description": "성공적으로 사용자를 생성했습니다.",
@@ -153,6 +155,7 @@ async def create_user(requestUser: UserLoginData):
     response_model=Dict[str, str],
     summary="사용자 로그인",
     description="사용자 인증을 수행하고 로그인합니다.",
+    tags=["users"],
     responses={
         200: {
             "description": "성공적으로 로그인했습니다.",
@@ -196,6 +199,7 @@ async def login_user(requestUser: UserLoginData):
     response_model=Dict[str, str],
     summary="사용자 정보 수정",
     description="주어진 이메일에 해당하는 사용자의 정보를 수정합니다. 수정 가능한 필드: display_name, photo_url",
+    tags=["users"],
     responses={
         200: {
             "description": "성공적으로 사용자 정보를 수정했습니다.",
@@ -259,6 +263,7 @@ async def update_user(email: str, user_data: dict):
     response_model=Dict[str, str],
     summary="사용자 삭제",
     description="주어진 이메일에 해당하는 사용자를 삭제합니다.",
+    tags=["users"],
     responses={
         200: {
             "description": "성공적으로 사용자를 삭제했습니다.",
