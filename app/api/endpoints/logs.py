@@ -45,6 +45,7 @@ async def create_log(
     date: str = Form(...),
 ):
     print(f"create log email:{email}")
+    print(f"date: {date}")
     try:
         # 이메일 유효성 검사
         if not email:
@@ -113,24 +114,10 @@ async def create_log(
                     # 로케일 설정 실패 시 기본값 사용
                     locale.setlocale(locale.LC_TIME, "")
 
-                date_parts = date.replace("오전", "AM").replace("오후", "PM")
-                try:
-                    parsed_date = datetime.strptime(
-                        date_parts, "%Y. %m. %d. %p %I:%M:%S"
-                    )
-                except ValueError:
-                    # 다른 형식으로 시도
-                    try:
-                        parsed_date = datetime.strptime(
-                            date_parts, "%Y. %m. %d. %p %H:%M:%S"
-                        )
-                    except ValueError:
-                        raise HTTPException(
-                            status_code=400, detail="잘못된 날짜 형식입니다"
-                        )
-
+                # 입력된 날짜 문자열을 datetime 객체로 변환
+                parsed_date = datetime.strptime(date, "%Y. %m. %d. 오후 %I:%M:%S")
+                # MySQL datetime 형식으로 변환
                 formatted_date = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
-                print(f"formatted_date: {formatted_date}")  # 2024-12-10 11:45:20
             except ValueError as e:
                 raise HTTPException(status_code=400, detail="잘못된 날짜 형식입니다")
 
