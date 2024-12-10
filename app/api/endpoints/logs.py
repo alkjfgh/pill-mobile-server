@@ -114,8 +114,23 @@ async def create_log(
                     locale.setlocale(locale.LC_TIME, "")
 
                 date_parts = date.replace("오전", "AM").replace("오후", "PM")
-                parsed_date = datetime.strptime(date_parts, "%Y. %m. %d. %p %I:%M:%S")
+                try:
+                    parsed_date = datetime.strptime(
+                        date_parts, "%Y. %m. %d. %p %I:%M:%S"
+                    )
+                except ValueError:
+                    # 다른 형식으로 시도
+                    try:
+                        parsed_date = datetime.strptime(
+                            date_parts, "%Y. %m. %d. %p %H:%M:%S"
+                        )
+                    except ValueError:
+                        raise HTTPException(
+                            status_code=400, detail="잘못된 날짜 형식입니다"
+                        )
+
                 formatted_date = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
+                print(f"formatted_date: {formatted_date}")  # 2024-12-10 11:45:20
             except ValueError as e:
                 raise HTTPException(status_code=400, detail="잘못된 날짜 형식입니다")
 
