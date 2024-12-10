@@ -20,4 +20,4 @@ class Log(Base):
         self.email = email
 
     def __str__(self):
-        return f"Log(id={self.id}, date={self.date}, image={self.image}, result={self.result}, email={self.email})"
+        return f"Log(id={self.id}, date={self.date}, result={self.result}, email={self.email})"

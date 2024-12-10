@@ -20,6 +20,8 @@ class UserService(BaseService[User]):
             return None
 
     def create_user(self, user: User) -> bool:
+        print("userService create_user")
+        print("user: ", user.email)
         try:
             self.db.add(user)
             self.db.commit()
@@ -30,21 +32,43 @@ class UserService(BaseService[User]):
             return False
 
     def login(self, requestUser: UserLoginData) -> bool:
-        user = self.get_by_email(requestUser.email)
-        if not user:
+        print("userService login")
+        print("requestUser: ", requestUser.email)
+        try:
+            user = self.get_by_email(requestUser.email)
+            if not user:
+                return False
+            return True
+        except Exception as e:
+            print(f"Error in login: {str(e)}")
             return False
-        return True
 
     def update_user(self, email: str, user_data: dict) -> bool:
-        user = self.get_by_email(email)
-        if not user:
+        print("userService update_user")
+        print("email: ", email)
+        print("user_data: ", user_data)
+        try:
+            user = self.get_by_email(email)
+            if not user:
+                return False
+            return self.update(user, user_data)
+        except Exception as e:
+            print(f"Error in update_user: {str(e)}")
+            self.db.rollback()
             return False
-        return self.update(user, user_data)
 
     def delete_user(self, email: str) -> bool:
-        user = self.get_by_email(email)
-        if not user:
+        print("userService delete_user")
+        print("email: ", email)
+        try:
+            user = self.get_by_email(email)
+            if not user:
+                return False
+            self.db.delete(user)
+            self.db.commit()
+            print("userService delete user success")
+            return True
+        except Exception as e:
+            print(f"Error in delete_user: {str(e)}")
+            self.db.rollback()
             return False
-        self.db.delete(user)
-        self.db.commit()
-        return True

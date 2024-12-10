@@ -120,6 +120,8 @@ async def get_user(email: str):
     },
 )
 async def create_user(requestUser: UserLoginData):
+    print("users create_user")
+    print("requestUser: ", requestUser.email)
     try:
         print("requestUser: ", requestUser)
 
@@ -182,6 +184,8 @@ async def create_user(requestUser: UserLoginData):
     },
 )
 async def login_user(requestUser: UserLoginData):
+    print("users login_user")
+    print("requestUser: ", requestUser.email)
     try:
         user_service = UserService(db=db)
         is_success = user_service.login(requestUser)
@@ -246,6 +250,9 @@ async def login_user(requestUser: UserLoginData):
     },
 )
 async def update_user(email: str, user_data: dict):
+    print("users update_user")
+    print("email: ", email)
+    print("user_data: ", user_data)
     try:
         user_service = UserService(db=db)
         is_success = user_service.update_user(email, user_data)
@@ -294,6 +301,8 @@ async def update_user(email: str, user_data: dict):
     },
 )
 async def delete_user(email: str):
+    print("users delete_user")
+    print("email: ", email)
     try:
         user_service = UserService(db=db)
         is_success = user_service.delete_user(email)

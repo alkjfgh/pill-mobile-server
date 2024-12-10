@@ -14,6 +14,7 @@ class LogService(BaseService[Log]):
         try:
             self.db.add(log)
             self.db.commit()
+            print("logService create_log success")
             return True
         except Exception as e:
             print(f"Error in create_log: {str(e)}")
@@ -23,4 +24,10 @@ class LogService(BaseService[Log]):
     def get_logs(self, email: str) -> List[Log]:
         print("logService get_logs")
         print("email: ", email)
-        return self.db.query(self.model).filter(self.model.email == email).all()
+        try:
+            logs = self.db.query(self.model).filter(self.model.email == email).all()
+            print("logService get_logs success")
+            return logs
+        except Exception as e:
+            print(f"Error in get_logs: {str(e)}")
+            return []
