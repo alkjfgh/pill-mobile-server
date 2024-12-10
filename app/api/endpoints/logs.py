@@ -107,26 +107,36 @@ async def create_log(
             print(f"result: {result}, type: {type(result)}")
             print(f"date: {date}, type: {type(date)}")
             try:
-                # 입력된 날짜가 이미 "YYYY-MM-DD HH:MM:SS" 형식이므로
-                # 직접 datetime으로 파싱
+                # 입력된 날짜를 datetime 객체로 파싱
                 parsed_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-                formatted_date = date  # 이미 올바른 형식이므로 그대로 사용
-            except ValueError as e:
-                print(f"날짜 파싱 오류: {str(e)}")  # 디버깅을 위한 로그 추가
-                raise HTTPException(status_code=400, detail="잘못된 날짜 형식입니다")
 
-            # formatted_date를 사용하도록 수정
-            log = Log(
-                email=email, image=str(file_path), result=result, date=formatted_date
-            )
-            print(f"생성된 로그 객체: {log.__dict__}")
-            log_service = LogService(db=db)
-            isSuccess = log_service.create_log(log)
-            if not isSuccess:
-                raise HTTPException(
-                    status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다"
+                # Log 객체 생성 시 parsed_date 사용
+                log = Log(
+                    email=email,
+                    image=str(file_path),
+                    result=result,
+                    date=parsed_date,  # formatted_date 대신 parsed_date 사용
                 )
-            print(f"로그 저장 완료")
+                print(f"생성된 로그 객체: {log.__dict__}")
+                log_service = LogService(db=db)
+                isSuccess = log_service.create_log(log)
+                if not isSuccess:
+                    raise HTTPException(
+                        status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다"
+                    )
+                print(f"로그 저장 완료")
+            except Exception as e:
+                print(f"로그 생성/저장 중 오류 발생: {str(e)}")
+                print(f"에러 타입: {type(e).__name__}")
+                print(f"상세 에러: {e.__dict__}")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"로그 생성/저장 중 오류가 발생했습니다: {str(e)}",
+                )
+
+            print("logs create log end")
+            return {"message": "로그가 생성되었습니다"}
+
         except Exception as e:
             print(f"로그 생성/저장 중 오류 발생: {str(e)}")
             print(f"에러 타입: {type(e).__name__}")
@@ -135,10 +145,6 @@ async def create_log(
                 status_code=500,
                 detail=f"로그 생성/저장 중 오류가 발생했습니다: {str(e)}",
             )
-
-        print(10)
-
-        return {"message": "로그가 생성되었습니다"}
 
     except HTTPException as he:
         raise he
