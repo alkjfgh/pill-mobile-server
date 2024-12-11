@@ -145,10 +145,10 @@ async def logout(request: Request):
     return response
 
 @admin_router.delete("/users/{user_id}")
-async def delete_user(user_id: str, admin: dict = Depends(verify_admin)):
+async def delete_user(email: str, admin: dict = Depends(verify_admin)):
     user_service = UserService(db=db)
     try:
-        user_service.delete_user(user_id)
+        user_service.delete_user(email)
         return {"message": "사용자가 성공적으로 삭제되었습니다"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
