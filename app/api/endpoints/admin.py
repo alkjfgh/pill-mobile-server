@@ -27,6 +27,13 @@ async def verify_admin(request: Request):
     return {"username": ADMIN_USERNAME}
 
 @admin_router.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse(
+        "admin/login.html",
+        {"request": request}
+    )
+
+@admin_router.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
     if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
         return RedirectResponse(
@@ -35,18 +42,6 @@ async def login(request: Request, username: str = Form(...), password: str = For
         )
     # 세션에 로그인 정보 저장
     request.session["admin_authenticated"] = True
-    return RedirectResponse(
-        url="/admin/dashboard",
-        status_code=303
-    )
-
-@admin_router.post("/login")
-async def login(username: str = Form(...), password: str = Form(...)):
-    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
-        return RedirectResponse(
-            url="/admin/login",
-            status_code=303
-        )
     return RedirectResponse(
         url="/admin/dashboard",
         status_code=303
