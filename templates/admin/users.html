@@ -61,13 +61,16 @@
 
 <!-- JavaScript 코드 추가 -->
 <script>
-const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+// DOM이 완전히 로드된 후 Modal을 초기화하도록 수정
+document.addEventListener('DOMContentLoaded', function() {
+    window.editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+});
 
 function editUser(uid, email, displayName) {
     document.getElementById('editUserId').value = uid;
     document.getElementById('editEmail').value = email;
     document.getElementById('editDisplayName').value = displayName;
-    editUserModal.show();
+    window.editUserModal.show();
 }
 
 async function updateUser() {
@@ -111,7 +114,7 @@ async function deleteUser(uid) {
             alert('사용자 삭제 중 오류가 발생했습니다.');
         }
     } catch (error) {
-        alert('사용자 삭제 중 오류가 발생했습니다.');
+        alert('사용자 삭�� 중 오류가 발생했습니다.');
     }
 }
 </script>

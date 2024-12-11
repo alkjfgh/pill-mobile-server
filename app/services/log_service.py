@@ -45,3 +45,14 @@ class LogService(BaseService[Log]):
         print("logService delete_all_logs")
         self.db.logs.delete_many({})
         print("logService delete_all_logs success")
+
+    def get_log_by_id(self, log_id: str) -> Log:
+        print("logService get_log_by_id")
+        print("log_id: ", log_id)
+        try:
+            log = self.db.query(self.model).filter(self.model.id == log_id).first()
+            print("logService get_log_by_id success")
+            return log
+        except Exception as e:
+            print(f"Error in get_log_by_id: {str(e)}")
+            return None
