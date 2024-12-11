@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.router import router
 from app.core.config import settings
 from app.api.endpoints.admin import admin_router
+from starlette.middleware.sessions import SessionMiddleware
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -25,6 +26,12 @@ def create_app() -> FastAPI:
             "url": "https://opensource.org/licenses/MIT",
         },
     )
+
+    app.add_middleware(
+        SessionMiddleware, 
+        secret_key="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # 안전한 비밀키로 변경하세요
+        session_cookie="admin_session"
+    )
     
     # CORS 설정
     app.add_middleware(
@@ -34,7 +41,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # 정적 파일 설정
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
