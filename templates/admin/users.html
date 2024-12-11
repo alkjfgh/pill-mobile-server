@@ -10,7 +10,6 @@
                 <th>이메일</th>
                 <th>이름</th>
                 <th>가입일</th>
-                <th>마지막 로그인</th>
                 <th>작업</th>
             </tr>
         </thead>
@@ -21,14 +20,99 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.displayName }}</td>
                 <td>{{ user.createdAt.strftime('%Y-%m-%d') if user.createdAt else '-' }}</td>
-                <td>{{ user.lastLoginAt.strftime('%Y-%m-%d') if user.lastLoginAt else '-' }}</td>
                 <td>
-                    <button class="btn btn-sm btn-warning">수정</button>
-                    <button class="btn btn-sm btn-danger">삭제</button>
+                    <button class="btn btn-sm btn-warning" onclick="editUser('{{ user.uid }}', '{{ user.email }}', '{{ user.displayName }}')">수정</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser('{{ user.uid }}')">삭제</button>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- 수정 모달 추가 -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">사용자 정보 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label class="form-label">이메일</label>
+                        <input type="email" class="form-control" id="editEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">이름</label>
+                        <input type="text" class="form-control" id="editDisplayName" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="updateUser()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 코드 추가 -->
+<script>
+const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+function editUser(uid, email, displayName) {
+    document.getElementById('editUserId').value = uid;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editDisplayName').value = displayName;
+    editUserModal.show();
+}
+
+async function updateUser() {
+    const uid = document.getElementById('editUserId').value;
+    const email = document.getElementById('editEmail').value;
+    const displayName = document.getElementById('editDisplayName').value;
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('display_name', displayName);
+
+    try {
+        const response = await fetch(`/admin/users/${uid}`, {
+            method: 'PUT',
+            body: formData
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('사용자 정보 수정 중 오류가 발생했습니다.');
+        }
+    } catch (error) {
+        alert('사용자 정보 수정 중 오류가 발생했습니다.');
+    }
+}
+
+async function deleteUser(uid) {
+    if (!confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/admin/users/${uid}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('사용자 삭제 중 오류가 발생했습니다.');
+        }
+    } catch (error) {
+        alert('사용자 삭제 중 오류가 발생했습니다.');
+    }
+}
+</script>
 {% endblock %}
