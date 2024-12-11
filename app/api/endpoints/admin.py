@@ -88,3 +88,11 @@ async def admin_logs(request: Request, admin: Admin = Depends(verify_admin)):
             "admin": admin
         }
     )
+
+@admin_router.get("/logout")
+async def logout():
+    response = RedirectResponse(
+        url="/admin/login",
+        status_code=303
+    )
+    return response

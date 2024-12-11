@@ -1,4 +1,4 @@
-+{% extends "admin/base.html" %}
+{% extends "admin/base.html" %}
 
 {% block content %}
 <h2>사용자 관리</h2>
@@ -6,20 +6,22 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>UID</th>
                 <th>이메일</th>
                 <th>이름</th>
                 <th>가입일</th>
+                <th>마지막 로그인</th>
                 <th>작업</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
             <tr>
-                <td>{{ user.id }}</td>
+                <td>{{ user.uid }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>{{ user.displayName }}</td>
+                <td>{{ user.createdAt.strftime('%Y-%m-%d') if user.createdAt else '-' }}</td>
+                <td>{{ user.lastLoginAt.strftime('%Y-%m-%d') if user.lastLoginAt else '-' }}</td>
                 <td>
                     <button class="btn btn-sm btn-warning">수정</button>
                     <button class="btn btn-sm btn-danger">삭제</button>
