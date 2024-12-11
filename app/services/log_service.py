@@ -36,20 +36,31 @@ class LogService(BaseService[Log]):
     def delete_log(self, log_id: str):
         print("logService delete_log")
         print("log_id: ", log_id)
-        log = self.db.logs.find_one_and_delete({"_id": ObjectId(log_id)})
-        if not log:
-            raise ValueError("로그를 찾을 수 없습니다")
-        return log
+        try:
+            log_id = UUID(log_id)
+            log = self.db.query(self.model).filter(self.model.id == log_id).first()
+            if not log:
+                raise ValueError("로그를 찾을 수 없습니다")
+            self.db.delete(log)
+            self.db.commit()
+            return log
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     def delete_all_logs(self):
         print("logService delete_all_logs")
-        self.db.logs.delete_many({})
-        print("logService delete_all_logs success")
+        try:
+            self.db.query(self.model).delete()
+            self.db.commit()
+            print("logService delete_all_logs success")
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     def get_log_by_id(self, log_id: str) -> Log:
         print("logService get_log_by_id")
         print("log_id: ", log_id)
-        log_id = UUID(log_id)
         try:
             log = self.db.query(self.model).filter(self.model.id == log_id).first()
             print("logService get_log_by_id success")
