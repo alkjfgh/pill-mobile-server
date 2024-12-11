@@ -10,7 +10,7 @@ class ImageService:
     def __init__(self):
         self.base_path = os.path.expanduser(settings.UPLOAD_DIR_PATH)
 
-    def upload(self, image: UploadFile, user: User) -> str:
+    async def upload(self, image: UploadFile, user: User) -> str:
         print("image_service upload")
         # 이미지 파일 유효성 검사
         if not image or not image.filename:
@@ -26,14 +26,14 @@ class ImageService:
 
         # 파일 크기 제한 (10MB)
         MAX_FILE_SIZE = 10 * 1024 * 1024
-        contents = image.read(MAX_FILE_SIZE + 1)
+        contents = await image.read(MAX_FILE_SIZE + 1)
         if len(contents) > MAX_FILE_SIZE:
             raise HTTPException(
                 status_code=400, detail="파일 크기는 10MB를 초과할 수 없습니다"
             )
 
         # 파일 포인터 리셋
-        image.seek(0)
+        await image.seek(0)
 
         # 이미지 저장 경로 설정
         upload_dir = os.path.expanduser(settings.UPLOAD_DIR_PATH)
