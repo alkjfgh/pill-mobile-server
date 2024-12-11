@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h2>시스템 로그</h2>
+<div class="table-responsive mt-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>시간</th>
+                <th>이메일</th>
+                <th>이미지</th>
+                <th>결과</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.date.strftime('%Y-%m-%d %H:%M:%S') if log.date else '-' }}</td>
+                <td>{{ log.email }}</td>
+                <td>
+                    {% if log.image %}
+                    <a href="/api/logs/image/{{ log.image }}" target="_blank">보기</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ log.result }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

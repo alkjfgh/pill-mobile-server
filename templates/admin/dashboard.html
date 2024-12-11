@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h2>대시보드</h2>
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">총 사용자 수</h5>
+                <p class="card-text display-4">{{ user_count }}</p>
+                <a href="/admin/users" class="btn btn-primary">사용자 관리</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">총 로그 수</h5>
+                <p class="card-text display-4">{{ log_count }}</p>
+                <a href="/admin/logs" class="btn btn-primary">로그 보기</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

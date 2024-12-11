@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.api.endpoints import users, disPill, logs
+from app.api.endpoints import admin
 
 router = APIRouter()
 
