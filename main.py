@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from app.api.router import router
 from app.core.config import settings
-
+from fastapi_admin.app import app as admin_app
+from app.api.endpoints.admin import admin_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -24,20 +27,25 @@ def create_app() -> FastAPI:
             "url": "https://opensource.org/licenses/MIT",
         },
     )
-
+    
     # CORS 설정
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    # 라우터 등록
+    # 정적 파일 설정
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
+    # 관리자 페이지 라우터 등록
+    app.include_router(admin_router, prefix="/admin", tags=["admin"])
+    
+    # API 라우터 등록
     app.include_router(router, prefix="/api")
 
     return app
-
 
 app = create_app()
