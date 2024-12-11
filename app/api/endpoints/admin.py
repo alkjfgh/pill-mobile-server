@@ -106,18 +106,15 @@ async def admin_logs(
 async def delete_log(log_id: str, admin: dict = Depends(verify_admin)):
     log_service = LogService(db=db)
     try:
-        # UUID에서 하이픈 제거
-        formatted_log_id = log_id.replace("-", "")
-        
         # 로그가 존재하는지 먼저 확인
-        log = log_service.get_log_by_id(formatted_log_id)
+        log = log_service.get_log_by_id(log_id)
         if not log:
             raise HTTPException(
                 status_code=404,
                 detail="해당 ID의 로그를 찾을 수 없습니다"
             )
             
-        log_service.delete_log(formatted_log_id)
+        log_service.delete_log(log_id)
         return {"message": "로그가 성공적으로 삭제되었습니다"}
     except Exception as e:
         raise HTTPException(
