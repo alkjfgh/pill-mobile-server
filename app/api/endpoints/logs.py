@@ -44,7 +44,7 @@ async def create_log(
     result: str = Form(...),
     date: str = Form(...),
 ):
-    print(f"create log email:{email}")
+    print(f"logs create log email:{email}")
     print(f"date: {date}")
     try:
         # 이메일 유효성 검사
