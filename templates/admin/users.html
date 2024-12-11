@@ -22,7 +22,7 @@
                 <td>{{ user.createdAt.strftime('%Y-%m-%d') if user.createdAt else '-' }}</td>
                 <td>
                     <button class="btn btn-sm btn-warning" onclick="editUser('{{ user.uid }}', '{{ user.email }}', '{{ user.displayName }}')">수정</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteUser('{{ user.uid }}')">삭제</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser('{{ user.email }}')">삭제</button>
                 </td>
             </tr>
             {% endfor %}
@@ -105,16 +105,21 @@ async function deleteUser(uid) {
 
     try {
         const response = await fetch(`/admin/users/${uid}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
         if (response.ok) {
             location.reload();
         } else {
-            alert('사용자 삭제 중 오류가 발생했습니다.');
+            const errorData = await response.json();
+            alert(errorData.message || '사용자 삭제 중 오류가 발생했습니다.');
         }
     } catch (error) {
-        alert('사용자 삭�� 중 오류가 발생했습니다.');
+        console.error('Delete user error:', error);
+        alert('사용자 삭제 중 오류가 발생했습니다.');
     }
 }
 </script>
