@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     PORT: int = 8883
 
     # 이미지 업로드 경로
-    UPLOAD_DIR: str
+    UPLOAD_DIR: str = "/home/horizon/pill/uploads"  # 기본값 설정
 
     @property
     def UPLOAD_DIR_PATH(self) -> str:
@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()
