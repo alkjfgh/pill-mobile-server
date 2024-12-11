@@ -2,6 +2,24 @@
 
 {% block content %}
 <h2>시스템 로그</h2>
+
+<!-- 검색 폼 추가 -->
+<div class="mb-4">
+    <form method="GET" action="/admin/logs" class="form-inline">
+        <div class="input-group">
+            <input type="text" name="email" class="form-control" placeholder="이메일로 검색" value="{{ search_email or '' }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">검색</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 전체 삭제 버튼 추가 -->
+<div class="mb-3">
+    <button class="btn btn-danger" onclick="deleteAllLogs()">전체 로그 삭제</button>
+</div>
+
 <div class="table-responsive mt-4">
     <table class="table table-striped">
         <thead>
@@ -10,6 +28,7 @@
                 <th>이메일</th>
                 <th>이미지</th>
                 <th>결과</th>
+                <th>작업</th>
             </tr>
         </thead>
         <tbody>
@@ -25,9 +44,48 @@
                     {% endif %}
                 </td>
                 <td>{{ log.result }}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteLog('{{ log.id }}')">삭제</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+async function deleteLog(logId) {
+    if (confirm('이 로그를 삭제하시겠습니까?')) {
+        try {
+            const response = await fetch(`/admin/logs/${logId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('로그 삭제 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            alert('로그 삭제 중 오류가 발생했습니다.');
+        }
+    }
+}
+
+async function deleteAllLogs() {
+    if (confirm('모든 로그를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        try {
+            const response = await fetch('/admin/logs', {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('로그 삭제 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            alert('로그 삭제 중 오류가 발생했습니다.');
+        }
+    }
+}
+</script>
 {% endblock %}

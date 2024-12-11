@@ -64,3 +64,39 @@ class ImageService:
         
         print("image_service get_image end")
         return full_path
+
+    def delete_image(self, image_path: str) -> bool:
+        print("image_service delete_image")
+        try:
+            if not image_path:
+                return False
+            
+            full_path = os.path.join(self.base_path, os.path.basename(image_path))
+            print("full_path: ", full_path)
+            
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                print(f"이미지 파일 삭제 완료: {full_path}")
+                return True
+            return False
+        except Exception as e:
+            print(f"이미지 파일 삭제 실패: {str(e)}")
+            return False
+
+    def delete_all_images(self) -> bool:
+        print("image_service delete_all_images")
+        try:
+            # 디렉토리가 존재하는지 확인
+            if not os.path.exists(self.base_path):
+                return False
+            
+            # 디렉토리 내의 모든 파일 삭제
+            for filename in os.listdir(self.base_path):
+                file_path = os.path.join(self.base_path, filename)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            print(f"모든 이미지 파일 삭제 완료: {self.base_path}")
+            return True
+        except Exception as e:
+            print(f"이미지 파일 삭제 실패: {str(e)}")
+            return False

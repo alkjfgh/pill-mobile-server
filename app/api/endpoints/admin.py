@@ -80,18 +80,56 @@ async def admin_users(request: Request, admin: dict = Depends(verify_admin)):
     )
 
 @admin_router.get("/logs", response_class=HTMLResponse)
-async def admin_logs(request: Request, admin: dict = Depends(verify_admin)):
+async def admin_logs(
+    request: Request, 
+    email: str = None,
+    admin: dict = Depends(verify_admin)
+):
     log_service = LogService(db=db)
     logs = log_service.get_all()
+    
+    # 이메일 검색 필터링
+    if email:
+        logs = [log for log in logs if email.lower() in log.email.lower()]
     
     return templates.TemplateResponse(
         "admin/logs.html",
         {
             "request": request,
             "logs": logs,
-            "admin": admin
+            "admin": admin,
+            "search_email": email
         }
     )
+
+@admin_router.delete("/logs/{log_id}")
+async def delete_log(log_id: str, admin: dict = Depends(verify_admin)):
+    log_service = LogService(db=db)
+    try:
+        # 로그가 존재하는지 먼저 확인
+        log = log_service.get_log_by_id(log_id)
+        if not log:
+            raise HTTPException(
+                status_code=404,
+                detail="해당 ID의 로그를 찾을 수 없습니다"
+            )
+            
+        log_service.delete_log(log_id)
+        return {"message": "로그가 성공적으로 삭제되었습니다"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"로그 삭제 중 오류가 발생했습니다: {str(e)}"
+        )
+
+@admin_router.delete("/logs")
+async def delete_all_logs(admin: dict = Depends(verify_admin)):
+    log_service = LogService(db=db)
+    try:
+        log_service.delete_all_logs()
+        return {"message": "모든 로그가 성공적으로 삭제되었습니다"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @admin_router.get("/logout")
 async def logout(request: Request):
@@ -102,3 +140,26 @@ async def logout(request: Request):
         status_code=303
     )
     return response
+
+@admin_router.delete("/users/{email}")
+async def delete_user(email: str, admin: dict = Depends(verify_admin)):
+    user_service = UserService(db=db)
+    try:
+        user_service.delete_user(email)
+        return {"message": "사용자가 성공적으로 삭제되었습니다"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@admin_router.put("/users/{user_id}")
+async def update_user(
+    user_id: str,
+    email: str = Form(...),
+    display_name: str = Form(...),
+    admin: dict = Depends(verify_admin)
+):
+    user_service = UserService(db=db)
+    try:
+        user_service.update_user(user_id, {"email": email, "displayName": display_name})
+        return {"message": "사용자 정보가 업데이트되었습니다"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
