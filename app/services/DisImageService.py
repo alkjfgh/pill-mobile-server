@@ -1,52 +1,39 @@
-import torch
-from torchvision import models, transforms
-from PIL import Image
+import tensorflow as tf
+import tensorflow_datasets as tfds
 import os
 
 
 class DisImageService:
     def __init__(self):
-        # ResNet50 모델 로드 및 평가 모드로 설정
-        self.model = models.resnet50(pretrained=True)
-        self.model.eval()
-
-        # 이미지 전처리를 위한 transform 설정
-        self.transform = transforms.Compose(
-            [
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
-            ]
-        )
-
-        # 절대 경로로 파일 위치 지정
+        # 현재 디렉토리 경로 설정
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        classes_file = os.path.join(current_dir, "imagenet_classes.txt")
 
-        with open(classes_file, "r") as f:
-            self.categories = [s.strip() for s in f.readlines()]
+        # 모델 로드
+        model_path = os.path.join(current_dir, "../../model/oxford_flowers_model.h5")
+        self.model = tf.keras.models.load_model(model_path)
+
+        # 클래스 이름 로드
+        dataset_builder = tfds.builder("oxford_flowers102")
+        dataset_builder.download_and_prepare()
+        self.categories = dataset_builder.info.features["label"].names
 
     def predict_image(self, image_path):
+        print("DisImageService predict_image")
         try:
-            # 이미지 로드 및 전처리
-            image = Image.open(image_path).convert("RGB")
-            image_tensor = self.transform(image)
-            image_tensor = image_tensor.unsqueeze(0)  # 배치 차원 추가
+            print("image_path: ", image_path)
+            # 이미지 전처리
+            img = tf.keras.utils.load_img(image_path, target_size=(224, 224))
+            img_array = tf.keras.utils.img_to_array(img)
+            img_array = tf.expand_dims(img_array, axis=0)
+            img_array = img_array / 255.0
 
             # 예측 수행
-            with torch.no_grad():
-                outputs = self.model(image_tensor)
+            predictions = self.model.predict(img_array)
+            predicted_idx = tf.argmax(predictions[0]).numpy()
+            predicted_label = self.categories[predicted_idx]
 
-            # 가장 높은 확률의 클래스 가져오기
-            _, predicted_idx = torch.max(outputs, 1)
-            predicted_label: str = self.categories[predicted_idx.item()]
-            if len(predicted_label.split(",")) > 1:
-                return predicted_label.split(",")[1].strip()
-            else:
-                return predicted_label.strip()
+            print("predicted_label: ", predicted_label)
+            return predicted_label
 
         except Exception as e:
             return f"에러 발생: {str(e)}"
