@@ -19,7 +19,7 @@
                 <td>{{ log.email }}</td>
                 <td>
                     {% if log.image %}
-                    <a href="{{ log.image }}" target="_blank">보기</a>
+                    <a href="/api/logs/image/{{ log.image }}" target="_blank">보기</a>
                     {% else %}
                     -
                     {% endif %}
