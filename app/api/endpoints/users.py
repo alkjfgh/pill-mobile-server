@@ -151,6 +151,9 @@ async def create_user(requestUser: UserLoginData):
             raise HTTPException(status_code=500, detail="Failed to create user")
 
         return {"message": f"Create user {new_user.email}"}
+    except HTTPException as e:
+        print(f"Error creating user: {str(e)}")
+        raise
     except Exception as e:
         print(f"Error creating user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -197,6 +200,9 @@ async def login_user(requestUser: UserLoginData):
             raise HTTPException(status_code=401, detail="인증에 실패했습니다.")
 
         return {"message": f"Login user {requestUser.email}"}
+    except HTTPException as e:
+        print(f"Error logging in: {str(e)}")
+        raise
     except Exception as e:
         print(f"Error logging in: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -264,6 +270,9 @@ async def update_user(email: str, user_data: dict):
             raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
 
         return {"message": f"Update user {email}"}
+    except HTTPException as e:
+        print(f"Error updating user: {str(e)}")
+        raise
     except Exception as e:
         print(f"Error updating user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -314,6 +323,9 @@ async def delete_user(email: str):
             raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
 
         return {"message": f"Delete user {email}"}
+    except HTTPException as e:
+        print(f"Error deleting user: {str(e)}")
+        raise
     except Exception as e:
         print(f"Error deleting user: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
