@@ -98,13 +98,13 @@ async function updateUser() {
     }
 }
 
-async function deleteUser(uid) {
+async function deleteUser(email) {
     if (!confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
         return;
     }
 
     try {
-        const response = await fetch(`/admin/users/${uid}`, {
+        const response = await fetch(`/admin/users/${email}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

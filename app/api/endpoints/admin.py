@@ -144,7 +144,7 @@ async def logout(request: Request):
     )
     return response
 
-@admin_router.delete("/users/{user_id}")
+@admin_router.delete("/users/{email}")
 async def delete_user(email: str, admin: dict = Depends(verify_admin)):
     user_service = UserService(db=db)
     try:
