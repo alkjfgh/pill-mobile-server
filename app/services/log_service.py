@@ -2,12 +2,13 @@ from sqlalchemy.orm import Session
 from app.models.log import Log
 from app.services.base import BaseService
 from typing import List
-from bson import ObjectId
 from uuid import UUID
+from app.services.image_service import ImageService
 
 class LogService(BaseService[Log]):
     def __init__(self, db: Session):
         super().__init__(Log, db)
+        self.image_service = ImageService()
 
     def create_log(self, log: Log) -> bool:
         print("logService create_log")
@@ -41,13 +42,20 @@ class LogService(BaseService[Log]):
             log = self.db.query(self.model).filter(self.model.id == uuid_obj).first()
             if not log:
                 raise ValueError("로그를 찾을 수 없습니다")
+            
+            # 이미지 경로 저장
+            image_path = log.image
+
+            # 로그 데이터 삭제
             self.db.delete(log)
             self.db.commit()
+            
+            # DB 삭제 성공 후 이미지 삭제
+            if image_path:
+                self.image_service.delete_image(image_path)
+                
             print("logService delete_log success")
             return log
-        except ValueError as ve:
-            print(f"ValueError in delete_log: {str(ve)}")
-            raise ve
         except Exception as e:
             print(f"Error in delete_log: {str(e)}")
             self.db.rollback()
@@ -56,8 +64,12 @@ class LogService(BaseService[Log]):
     def delete_all_logs(self):
         print("logService delete_all_logs")
         try:
+            # 모든 로그 데이터 삭제
             self.db.query(self.model).delete()
             self.db.commit()
+
+            # 모든 이미지 파일 삭제
+            self.image_service.delete_all_images()
             print("logService delete_all_logs success")
         except Exception as e:
             self.db.rollback()
