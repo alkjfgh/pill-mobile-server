@@ -141,6 +141,7 @@ async def get_logs(email: str):
             if not os.path.exists(log_dict["image"]):
                 log_dict["image"] = None
             processed_logs.append(log_dict)
+        print("size of processed_logs: ", len(processed_logs))
 
         return {
             "message": f"Get logs for {email}",
