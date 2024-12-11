@@ -59,7 +59,7 @@ async def create_log(
 
         # 이미지 업로드
         image_service = ImageService()
-        file_path = image_service.upload(image, user)
+        file_path = await image_service.upload(image, user)
 
         # 입력된 날짜를 datetime 객체로 파싱
         parsed_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
