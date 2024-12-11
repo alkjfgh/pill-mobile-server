@@ -62,7 +62,7 @@ async def admin_dashboard(request: Request, admin: Admin = Depends(verify_admin)
     )
 
 @admin_router.get("/users", response_class=HTMLResponse)
-async def admin_users(request: Request):
+async def admin_users(request: Request, admin: Admin = Depends(verify_admin)):
     user_service = UserService(db=db)
     users = user_service.get_all()
     
@@ -70,12 +70,13 @@ async def admin_users(request: Request):
         "admin/users.html",
         {
             "request": request,
-            "users": users
+            "users": users,
+            "admin": admin
         }
     )
 
 @admin_router.get("/logs", response_class=HTMLResponse)
-async def admin_logs(request: Request):
+async def admin_logs(request: Request, admin: Admin = Depends(verify_admin)):
     log_service = LogService(db=db)
     logs = log_service.get_all()
     
@@ -83,6 +84,7 @@ async def admin_logs(request: Request):
         "admin/logs.html",
         {
             "request": request,
-            "logs": logs
+            "logs": logs,
+            "admin": admin
         }
     )
