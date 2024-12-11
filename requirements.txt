@@ -16,3 +16,4 @@ Pillow>=11.0.0  # Image Processing
 torch>=2.1.1  # PyTorch
 torchvision>=0.20.1  # PyTorch Vision
 tensorflow>=2.18.0  # TensorFlow
+tensorflow-datasets>=4.9.7  # TensorFlow Datasets
