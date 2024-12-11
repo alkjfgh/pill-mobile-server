@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from app.api.router import router
 from app.core.config import settings
-from fastapi_admin.app import app as admin_app
 from app.api.endpoints.admin import admin_router
 
 def create_app() -> FastAPI:
