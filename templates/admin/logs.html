@@ -57,7 +57,8 @@
 async function deleteLog(logId) {
     if (confirm('이 로그를 삭제하시겠습니까?')) {
         try {
-            const response = await fetch(`/admin/logs/${logId}`, {
+            const formattedId = logId.replace(/-/g, '');
+            const response = await fetch(`/admin/logs/${formattedId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {

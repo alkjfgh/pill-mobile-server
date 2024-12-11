@@ -3,7 +3,7 @@ from app.models.log import Log
 from app.services.base import BaseService
 from typing import List
 from bson import ObjectId
-
+from uuid import UUID
 
 class LogService(BaseService[Log]):
     def __init__(self, db: Session):
@@ -49,6 +49,7 @@ class LogService(BaseService[Log]):
     def get_log_by_id(self, log_id: str) -> Log:
         print("logService get_log_by_id")
         print("log_id: ", log_id)
+        log_id = UUID(log_id)
         try:
             log = self.db.query(self.model).filter(self.model.id == log_id).first()
             print("logService get_log_by_id success")
