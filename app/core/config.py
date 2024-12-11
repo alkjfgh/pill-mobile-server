@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
@@ -18,6 +19,10 @@ class Settings(BaseSettings):
 
     # 이미지 업로드 경로
     UPLOAD_DIR: str
+
+    @property
+    def UPLOAD_DIR_PATH(self) -> str:
+        return os.path.expanduser(self.UPLOAD_DIR)
 
     class Config:
         case_sensitive = True

@@ -89,7 +89,7 @@ async def create_log(
             )
 
         # 이미지 저장 경로 설정
-        upload_dir = os.path.expanduser(settings.UPLOAD_DIR)
+        upload_dir = os.path.expanduser(settings.UPLOAD_DIR_PATH)
         os.makedirs(upload_dir, exist_ok=True)
 
         # 고유한 파일명 생성
@@ -246,7 +246,7 @@ async def get_image(image_path: str):
     print("image_path: ", image_path)
     try:
         # 기본 업로드 디렉토리 경로
-        base_path = os.path.expanduser(settings.UPLOAD_DIR)
+        base_path = os.path.expanduser(settings.UPLOAD_DIR_PATH)
 
         # 전체 파일 경로 생성
         full_path = os.path.join(base_path, os.path.basename(image_path))
