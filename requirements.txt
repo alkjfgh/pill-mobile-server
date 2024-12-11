@@ -25,3 +25,4 @@ fastapi-admin==1.0.4
 aioredis==2.0.1
 jinja2>=3.0.0
 aiosqlite>=0.17.0
+itsdangerous>=2.2.0
