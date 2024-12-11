@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # 포트 설정
     PORT: int = 8883
 
+    # 이미지 업로드 경로
+    UPLOAD_DIR: str
+
     class Config:
         case_sensitive = True
         env_file = ".env"

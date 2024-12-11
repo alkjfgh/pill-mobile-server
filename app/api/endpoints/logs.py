@@ -8,7 +8,8 @@ from pathlib import Path
 import re
 from app.db.base_class import db
 from datetime import datetime
-import locale
+from fastapi.responses import FileResponse
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -88,7 +89,7 @@ async def create_log(
             )
 
         # 이미지 저장 경로 설정
-        upload_dir = os.path.expanduser("~/pill/uploads")
+        upload_dir = os.path.expanduser(settings.UPLOAD_DIR)
         os.makedirs(upload_dir, exist_ok=True)
 
         # 고유한 파일명 생성
@@ -219,3 +220,46 @@ async def get_logs(email: str):
     except Exception as e:
         print(f"Error getting logs: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.get(
+    "/image/{image_path:path}",
+    summary="이미지 조회 API",
+    description="서버에 저장된 이미지를 조회합니다",
+    response_class=FileResponse,
+    tags=["logs"],
+    responses={
+        200: {
+            "description": "이미지 파일",
+            "content": {"image/*": {}},
+        },
+        404: {
+            "description": "이미지를 찾을 수 없음",
+            "content": {
+                "application/json": {"example": {"detail": "이미지를 찾을 수 없습니다"}}
+            },
+        },
+    },
+)
+async def get_image(image_path: str):
+    print("logs get_image")
+    print("image_path: ", image_path)
+    try:
+        # 기본 업로드 디렉토리 경로
+        base_path = os.path.expanduser(settings.UPLOAD_DIR)
+
+        # 전체 파일 경로 생성
+        full_path = os.path.join(base_path, os.path.basename(image_path))
+        print("full_path: ", full_path)
+
+        # 파일 존재 여부 확인
+        if not os.path.exists(full_path):
+            print("이미지를 찾을 수 없습니다")
+            raise HTTPException(status_code=404, detail="이미지를 찾을 수 없습니다")
+
+        return FileResponse(full_path)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"이미지 조회 중 오류가 발생했습니다: {str(e)}"
+        )
