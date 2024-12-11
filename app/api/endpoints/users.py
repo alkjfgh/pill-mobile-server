@@ -67,11 +67,15 @@ async def get_user(email: str):
         }
 
         return {"message": f"Get user {email}", "user": user_dict}
+    except HTTPException:
+        print(f"Error getting user: {str(e)}")
+        raise
+    except ValueError as ve:
+        print(f"Error getting user: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         print(f"Error getting user: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
+        raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
 @router.post(
     "/",
     response_model=Dict[str, str],
