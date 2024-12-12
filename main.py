@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.api.endpoints.admin import admin_router
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.api.endpoints.release import release_router
 
 
 def create_app() -> FastAPI:
@@ -52,6 +53,8 @@ def create_app() -> FastAPI:
 
     # API 라우터 등록
     app.include_router(router, prefix="/api")
+
+    app.include_router(release_router, prefix="/release", tags=["release"])
 
     return app
 
