@@ -5,6 +5,9 @@ from app.api.router import router
 from app.core.config import settings
 from app.api.endpoints.admin import admin_router
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.staticfiles import StaticFiles
+from app.api.endpoints.release import release_router
+
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -28,11 +31,11 @@ def create_app() -> FastAPI:
     )
 
     app.add_middleware(
-        SessionMiddleware, 
+        SessionMiddleware,
         secret_key="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # 안전한 비밀키로 변경하세요
-        session_cookie="admin_session"
+        session_cookie="admin_session",
     )
-    
+
     # CORS 설정
     app.add_middleware(
         CORSMiddleware,
@@ -43,14 +46,17 @@ def create_app() -> FastAPI:
     )
 
     # 정적 파일 설정
-    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    app.mount("/build", StaticFiles(directory="build"), name="build")
 
     # 관리자 페이지 라우터 등록
     app.include_router(admin_router, prefix="/admin", tags=["admin"])
-    
+
     # API 라우터 등록
     app.include_router(router, prefix="/api")
 
+    app.include_router(release_router, prefix="/release", tags=["release"])
+
     return app
+
 
 app = create_app()

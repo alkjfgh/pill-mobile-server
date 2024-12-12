@@ -1,10 +1,12 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import os
+from app.core.flowerTrans import FlowerTrans
 
 
 class DisImageService:
     def __init__(self):
+        print("DisImageService __init__ start")
         # 현재 디렉토리 경로 설정
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,8 +19,13 @@ class DisImageService:
         dataset_builder.download_and_prepare()
         self.categories = dataset_builder.info.features["label"].names
 
+        # 꽃 이름 번역
+        self.flowerTrans = FlowerTrans()
+
+        print("DisImageService __init__ end")
+
     def predict_image(self, image_path):
-        print("DisImageService predict_image")
+        print("DisImageService predict_image start")
         try:
             print("image_path: ", image_path)
             # 이미지 전처리
@@ -33,7 +40,10 @@ class DisImageService:
             predicted_label = self.categories[predicted_idx]
 
             print("predicted_label: ", predicted_label)
-            return predicted_label
+            translated_label = self.flowerTrans.trans(predicted_label)
+            print("translated predicted_label: ", translated_label)
+            print("DisImageService predict_image end")
+            return predicted_label, translated_label
 
         except Exception as e:
             return f"에러 발생: {str(e)}"
