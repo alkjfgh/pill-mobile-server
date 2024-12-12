@@ -184,7 +184,7 @@ async def admin_release(request: Request, admin: dict = Depends(verify_admin)):
             "release_notes": [
                 {
                     "version": current_version,
-                    "date": "2024-03-20",
+                    "date": "2024-11-12",
                     "notes": ["초기 버전 출시", "기본 기능 구현"],
                 }
             ],
