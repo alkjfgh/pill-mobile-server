@@ -21,7 +21,8 @@ disImageService = DisImageService()
                 "application/json": {
                     "example": {
                         "message": "알약 이미지 판별 성공",
-                        "pill_name": "타이레놀",
+                        "pill_name": "Tylenol",
+                        "translated_pill_name": "타이레놀",
                     }
                 }
             },
@@ -67,12 +68,16 @@ async def disPill(request: UploadFile = File(...)):
             image.save(image_path)
 
             # 이미지 처리 로직
-            pill_name = disImageService.predict_image(image_path)
+            pill_name, translated_pill_name = disImageService.predict_image(image_path)
 
             # 처리 후 이미지 파일 삭제 (선택사항)
             os.remove(image_path)
 
-            return {"message": "알약 이미지 판별 성공", "pill_name": pill_name}
+            return {
+                "message": "알약 이미지 판별 성공",
+                "pill_name": pill_name,
+                "translated_pill_name": translated_pill_name,
+            }
 
         except Exception as e:
             raise HTTPException(

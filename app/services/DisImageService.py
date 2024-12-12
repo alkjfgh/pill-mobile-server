@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import os
+from core.flowerTrans import FlowerTrans
 
 
 class DisImageService:
@@ -16,6 +17,9 @@ class DisImageService:
         dataset_builder = tfds.builder("oxford_flowers102")
         dataset_builder.download_and_prepare()
         self.categories = dataset_builder.info.features["label"].names
+
+        # 꽃 이름 번역
+        self.flowerTrans = FlowerTrans()
 
     def predict_image(self, image_path):
         print("DisImageService predict_image")
@@ -33,7 +37,9 @@ class DisImageService:
             predicted_label = self.categories[predicted_idx]
 
             print("predicted_label: ", predicted_label)
-            return predicted_label
+            translated_label = self.flowerTrans.trans(predicted_label)
+            print("translated predicted_label: ", translated_label)
+            return predicted_label, translated_label
 
         except Exception as e:
             return f"에러 발생: {str(e)}"
