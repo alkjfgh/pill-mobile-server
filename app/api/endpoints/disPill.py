@@ -3,6 +3,7 @@ from PIL import Image
 import io
 from app.services.DisImageService import DisImageService
 import os
+from app.core.pillTrans import PillTrans
 
 router = APIRouter()
 disImageService = DisImageService()
@@ -103,6 +104,7 @@ async def disPill(request: UploadFile = File(...)):
                         "message": "알약 이미지 판별 성공",
                         "name": "Tylenol",
                         "translated_name": "타이레놀",
+                        "description": "1) 중등도-중증의 급ㆍ만성 통증",
                     }
                 }
             },
@@ -153,10 +155,14 @@ async def disPill(request: UploadFile = File(...)):
             # 처리 후 이미지 파일 삭제 (선택사항)
             os.remove(image_path)
 
+            pillTrans = PillTrans()
+            description = pillTrans.trans(name)
+
             return {
                 "message": "알약 이미지 판별 성공",
                 "name": name,
                 "translated_name": translated_name,
+                "description": description,
             }
 
         except Exception as e:
