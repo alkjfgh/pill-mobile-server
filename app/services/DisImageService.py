@@ -14,6 +14,12 @@ class DisImageService:
         model_path = os.path.join(current_dir, "../../model/oxford_flowers_model.h5")
         self.model = tf.keras.models.load_model(model_path)
 
+        model_path2 = os.path.join(current_dir, "../../model/pill.h5")
+        if os.path.exists(model_path2):
+            self.model2 = tf.keras.models.load_model(model_path2)
+        else:
+            self.model2 = None
+
         # 클래스 이름 로드
         dataset_builder = tfds.builder("oxford_flowers102")
         dataset_builder.download_and_prepare()
@@ -45,5 +51,26 @@ class DisImageService:
             print("DisImageService predict_image end")
             return predicted_label, translated_label
 
+        except Exception as e:
+            return f"에러 발생: {str(e)}"
+
+    def predict_pill(self, image_path):
+        print("DisImageService predict_pill start")
+        try:
+            print("image_path: ", image_path)
+            # 이미지 전처리
+            img = tf.keras.utils.load_img(image_path, target_size=(224, 224))
+            img_array = tf.keras.utils.img_to_array(img)
+            img_array = tf.expand_dims(img_array, axis=0)
+            img_array = img_array / 255.0
+
+            # 예측 수행
+            predictions = self.model2.predict(img_array)
+            predicted_idx = tf.argmax(predictions[0]).numpy()
+            predicted_label = self.categories[predicted_idx]
+
+            print("predicted_label: ", predicted_label)
+            print("DisImageService predict_pill end")
+            return predicted_label
         except Exception as e:
             return f"에러 발생: {str(e)}"
