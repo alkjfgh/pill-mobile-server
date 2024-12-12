@@ -38,8 +38,8 @@ async def download_page(request: Request):
             "release_notes": [
                 {
                     "version": current_version,
-                    "date": "2024-11-12",
-                    "notes": ["초기 버전 출시", "기본 기능 구현"],
+                    "date": "2024-12-12",
+                    "notes": ["서버 통신 성공"],
                 }
             ],
         },
