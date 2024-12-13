@@ -148,14 +148,17 @@ async def disPill(request: UploadFile = File(...)):
             image_path = os.path.join(image_dir, request.filename)
             image.save(image_path)
 
-            # 이미지 처리 로직
-            name = disImageService.predict_pill(image_path)
-
             # 처리 후 이미지 파일 삭제 (선택사항)
             os.remove(image_path)
 
-            pillTrans = PillTrans()
-            description = pillTrans.trans(name)
+            # 이미지 처리 로직
+            name, confidence = disImageService.predict_pill(image_path)
+
+            if confidence >= 0.8:
+                pillTrans = PillTrans()
+                description = pillTrans.trans(name)
+            else:
+                description = "정확도가 낮아 설명을 제공할 수 없습니다.\n"
 
             return {
                 "message": "알약 이미지 판별 성공",

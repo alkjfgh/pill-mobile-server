@@ -132,11 +132,15 @@ class DisImageService:
 
             print(f"Predicted Class: {self.categories2[predicted_class]}")
             print(f"Confidence: {confidence:.2f}")
+            if confidence >= 0.8:
+                predicted_label = self.categories2[predicted_class]
+            else:
+                predicted_label = "알약을 인식하지 못했습니다."
 
             predicted_label = self.categories2[predicted_class]
 
             print("predicted_label: ", predicted_label)
             print("DisImageService predict_pill end")
-            return predicted_label
+            return predicted_label, confidence
         except Exception as e:
             return f"에러 발생: {str(e)}"
