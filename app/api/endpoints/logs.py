@@ -162,6 +162,7 @@ async def get_logs(email: str):
             description = description_service.get_description(log.id)
             log_dict["description"] = description.description
             processed_logs.append(log_dict)
+            print("log_dict: ", log_dict)
         print("size of processed_logs: ", len(processed_logs))
 
         return {
