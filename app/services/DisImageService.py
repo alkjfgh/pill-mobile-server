@@ -6,7 +6,7 @@ import numpy as np
 
 
 class DisImageService:
-    def load_categories(self):
+    def load_categories2(self):
         return [
             "미래트리메부틴정 100mg/병",
             "큐레틴정(빌베리건조엑스)",
