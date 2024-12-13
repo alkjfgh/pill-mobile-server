@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 from app.core.config import settings
 from app.services.image_service import ImageService
 from app.services.descriptionService import DescriptionService
+from app.models.description import Description
 
 router = APIRouter()
 
@@ -82,8 +83,9 @@ async def create_log(
 
         print("created_log.id: ", created_log.id)
         print("description: ", description)
+        des = Description(id=created_log.id, description=description)
         description_service = DescriptionService(db=db)
-        isSuccess = description_service.create_description(created_log.id, description)
+        isSuccess = description_service.create_description(des)
         if not isSuccess:
             raise HTTPException(
                 status_code=500, detail="설명 생성/저장 중 오류가 발생했습니다"
