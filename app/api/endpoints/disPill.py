@@ -102,8 +102,7 @@ async def disPill(request: UploadFile = File(...)):
                 "application/json": {
                     "example": {
                         "message": "알약 이미지 판별 성공",
-                        "name": "Tylenol",
-                        "translated_name": "타이레놀",
+                        "name": "타이레놀",
                         "description": "1) 중등도-중증의 급ㆍ만성 통증",
                     }
                 }
@@ -150,18 +149,20 @@ async def disPill(request: UploadFile = File(...)):
             image.save(image_path)
 
             # 이미지 처리 로직
-            name, translated_name = disImageService.predict_pill(image_path)
+            name, confidence = disImageService.predict_pill(image_path)
 
             # 처리 후 이미지 파일 삭제 (선택사항)
             os.remove(image_path)
 
-            pillTrans = PillTrans()
-            description = pillTrans.trans(name)
+            if confidence >= 0.8:
+                pillTrans = PillTrans()
+                description = pillTrans.trans(name)
+            else:
+                description = "정확도가 낮아 설명을 제공할 수 없습니다.\n"
 
             return {
                 "message": "알약 이미지 판별 성공",
                 "name": name,
-                "translated_name": translated_name,
                 "description": description,
             }
 

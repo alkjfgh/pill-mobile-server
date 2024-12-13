@@ -9,6 +9,8 @@ from datetime import datetime
 from fastapi.responses import FileResponse
 from app.core.config import settings
 from app.services.image_service import ImageService
+from app.services.descriptionService import DescriptionService
+from app.models.description import Description
 
 router = APIRouter()
 
@@ -43,6 +45,7 @@ async def create_log(
     image: UploadFile = File(...),
     result: str = Form(...),
     date: str = Form(...),
+    description: str = Form(...),
 ):
     print(f"logs create log email:{email}")
     print(f"date: {date}")
@@ -72,16 +75,30 @@ async def create_log(
             date=parsed_date,
         )
         log_service = LogService(db=db)
-        isSuccess = log_service.create_log(log)
+        created_log = log_service.create_log(log)
+        if not created_log:
+            raise HTTPException(
+                status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다"
+            )
+
+        print("created_log.id: ", created_log.id)
+        print("description: ", description)
+        des = Description(id=created_log.id, description=description)
+        description_service = DescriptionService(db=db)
+        isSuccess = description_service.create_description(des)
         if not isSuccess:
-            raise HTTPException(status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다")
+            raise HTTPException(
+                status_code=500, detail="설명 생성/저장 중 오류가 발생했습니다"
+            )
 
         return {"message": "로그가 생성되었습니다"}
 
     except HTTPException as he:
         raise he
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"로그 생성 중 오류가 발생했습니다: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"로그 생성 중 오류가 발생했습니다: {str(e)}"
+        )
 
 
 @router.get(
@@ -128,6 +145,7 @@ async def get_logs(email: str):
 
         log_service = LogService(db=db)
         logs = log_service.get_logs(email)
+        description_service = DescriptionService(db=db)
 
         # 로그 데이터 처리
         processed_logs = []
@@ -140,7 +158,11 @@ async def get_logs(email: str):
             }
             if not os.path.exists(log_dict["image"]):
                 log_dict["image"] = None
+
+            description = description_service.get_description(log.id)
+            log_dict["description"] = description.description
             processed_logs.append(log_dict)
+            print("log_dict: ", log_dict)
         print("size of processed_logs: ", len(processed_logs))
 
         return {
@@ -177,7 +199,7 @@ async def get_image(image_path: str):
     try:
         image_service = ImageService()
         full_path = image_service.get_image(image_path)
-        
+
         return FileResponse(full_path)
 
     except Exception as e:

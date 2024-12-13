@@ -38,8 +38,8 @@ async def download_page(request: Request):
             "release_notes": [
                 {
                     "version": current_version,
-                    "date": "2024-12-12",
-                    "notes": ["서버 통신 성공"],
+                    "date": "2024-12-13",
+                    "notes": ["알약 설명 추가", "디자인 개선"],
                 }
             ],
         },

@@ -47,6 +47,7 @@ def create_app() -> FastAPI:
 
     # 정적 파일 설정
     app.mount("/build", StaticFiles(directory="build"), name="build")
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
     # 관리자 페이지 라우터 등록
     app.include_router(admin_router, prefix="/admin", tags=["admin"])
