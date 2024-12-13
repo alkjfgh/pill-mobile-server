@@ -5,23 +5,25 @@ from typing import List
 from uuid import UUID
 from app.services.image_service import ImageService
 
+
 class LogService(BaseService[Log]):
     def __init__(self, db: Session):
         super().__init__(Log, db)
         self.image_service = ImageService()
 
-    def create_log(self, log: Log) -> bool:
+    def create_log(self, log: Log) -> Log:
         print("logService create_log")
         print("log: ", log)
         try:
             self.db.add(log)
             self.db.commit()
             print("logService create_log success")
-            return True
+            log = self.get_log_by_id(log.id)
+            return log
         except Exception as e:
             print(f"Error in create_log: {str(e)}")
             self.db.rollback()
-            return False
+            return None
 
     def get_logs(self, email: str) -> List[Log]:
         print("logService get_logs")
@@ -42,18 +44,18 @@ class LogService(BaseService[Log]):
             log = self.db.query(self.model).filter(self.model.id == uuid_obj).first()
             if not log:
                 raise ValueError("로그를 찾을 수 없습니다")
-            
+
             # 이미지 경로 저장
             image_path = log.image
 
             # 로그 데이터 삭제
             self.db.delete(log)
             self.db.commit()
-            
+
             # DB 삭제 성공 후 이미지 삭제
             if image_path:
                 self.image_service.delete_image(image_path)
-                
+
             print("logService delete_log success")
             return log
         except Exception as e:
