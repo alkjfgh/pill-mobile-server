@@ -18,7 +18,7 @@ class LogService(BaseService[Log]):
             self.db.add(log)
             self.db.commit()
             print("logService create_log success")
-            log = self.get_log_by_id(log.id)
+            print("log.id: ", log.id)
             return log
         except Exception as e:
             print(f"Error in create_log: {str(e)}")
