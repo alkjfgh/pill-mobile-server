@@ -111,14 +111,12 @@ class DisImageService:
         except Exception as e:
             return f"에러 발생: {str(e)}"
 
-    def preprocess_image(image_path):
+    def preprocess_image(self, image_path):
         image = tf.io.read_file(image_path)
-        image = tf.image.decode_png(image, channels=3)  # PNG 이미지 디코딩
-        image = tf.image.resize(image, (224, 224))  # 모델 입력 크기로 조정
-        image = tf.keras.applications.efficientnet.preprocess_input(
-            image
-        )  # EfficientNet 전처리
-        return tf.expand_dims(image, axis=0)  # 배치 차원 추가
+        image = tf.image.decode_png(image, channels=3)
+        image = tf.image.resize(image, (224, 224))
+        image = tf.keras.applications.efficientnet.preprocess_input(image)
+        return tf.expand_dims(image, axis=0)
 
     def predict_pill(self, image_path):
         print("DisImageService predict_pill start")
