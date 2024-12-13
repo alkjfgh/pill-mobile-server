@@ -80,6 +80,8 @@ async def create_log(
                 status_code=500, detail="로그 생성/저장 중 오류가 발생했습니다"
             )
 
+        print("created_log.id: ", created_log.id)
+        print("description: ", description)
         description_service = DescriptionService(db=db)
         isSuccess = description_service.create_description(created_log.id, description)
         if not isSuccess:
